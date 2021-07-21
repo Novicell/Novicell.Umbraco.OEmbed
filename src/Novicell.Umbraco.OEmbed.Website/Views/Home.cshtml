@@ -1,0 +1,52 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.Home>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@using System.Globalization
+@using Novicell.Umbraco.OEmbed.Models
+@{
+	Layout = null;
+}
+
+<style>
+    .embed {
+        width: 50%;
+    }
+
+    .embed__item {
+        position: relative;
+        padding-bottom: 56.25%; /* 16:9 */
+        height: 0;
+    }
+
+        .embed__item iframe,
+        .embed__item embed,
+        .embed__item embed
+        {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+</style>
+
+@if (Model.PageVideo?.OEmbed is OEmbedResponse video)
+{
+    var ratio = video.Width.HasValue && video.Height.HasValue ?
+        video.Height.Value / video.Width.Value :
+        0;
+
+    <div class="embed" data-ratio="@ratio" style="padding-bottom: @Math.Round(ratio * 100, 2).ToString(CultureInfo.InvariantCulture)%;">
+        <div class="embed__item embed__item--@(video.Type?.ToLower())">
+            @Html.Raw(video.Html)
+        </div>
+        
+        @if (video.TryGetValue("upload_date", out var uploadDateValue) &&
+             DateTime.TryParse(uploadDateValue.ToObject<string>(), out var uploadDate))
+        {
+            <p>Upload from @video.ProviderName: @uploadDate</p>
+        }
+
+    </div>
+}
+
