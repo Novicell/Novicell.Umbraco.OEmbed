@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<language alias="en" intName="English (US)" localName="English (US)" lcid="" culture="en-US">
+  <creator>
+    <name>Novicell</name>
+    <link>https://novicell.com</link>
+  </creator>
+  <area alias="novicell_oembed">
+    <key alias="url_missing">No url provided.</key>
+    <key alias="url_invalid">Invalid url.</key>
+    <key alias="url_not_supported">No provider configured for the given url, please review the url.</key>
+    <key alias="embed_not_found">Embed not found, please review url.</key>
+    <key alias="embed_type_invalid">Embed type is not valid (must be %type%).</key>
+  </area>
+</language>
