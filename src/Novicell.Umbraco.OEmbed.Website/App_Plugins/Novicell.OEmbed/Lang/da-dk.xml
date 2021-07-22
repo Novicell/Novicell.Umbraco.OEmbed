@@ -8,7 +8,7 @@
     <key alias="url_missing">Url er ikke udfyldt.</key>
     <key alias="url_invalid">Ugyldig url angivet.</key>
     <key alias="url_not_supported">Ingen udgiver konfigureret for denne url.</key>
-    <key alias="embed_not_found">Indlejring ikked fundet.</key>
+    <key alias="embed_not_found">Indlejring ikke fundet.</key>
     <key alias="embed_type_invalid">Typen af indlejring er ikke gyldig (skal være %type%).</key>
   </area>
 </language>
