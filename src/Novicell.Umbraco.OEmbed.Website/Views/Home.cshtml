@@ -1,15 +1,28 @@
-﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+﻿@using Umbraco.Cms.Core.Models.PublishedContent
+@using Umbraco.Cms.Web.Common.PublishedModels;
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.Home>
 @using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
 @using System.Globalization
 @using Novicell.Umbraco.OEmbed.Models
+@using Umbraco.Core.Models
 @{
 	Layout = null;
 }
 
-<style>
+<style type="text/css">
+    div.page
+    {
+        max-width: 50%;
+    }
+
+    .media {
+        max-width:100%;
+    }
+    .media img {
+      width:100%;  
+    }
+
     .embed {
-        width: 50%;
     }
 
     .embed__item {
@@ -18,17 +31,19 @@
         height: 0;
     }
 
-        .embed__item iframe,
-        .embed__item embed,
-        .embed__item embed
-        {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
+    .embed__item iframe,
+    .embed__item embed,
+    .embed__item object
+    {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
 </style>
+
+<div class="page">
 
 @if (Model.PageVideo?.OEmbed is OEmbedResponse video)
 {
@@ -36,8 +51,8 @@
         video.Height.Value / video.Width.Value :
         0;
 
-    <div class="embed" data-ratio="@ratio" style="padding-bottom: @Math.Round(ratio * 100, 2).ToString(CultureInfo.InvariantCulture)%;">
-        <div class="embed__item embed__item--@(video.Type?.ToLower())">
+    <div class="embed" data-ratio="@ratio" >
+        <div class="embed__item embed__item--@(video.Type?.ToLower())" style="padding-bottom: @Math.Round(ratio * 100, 2).ToString(CultureInfo.InvariantCulture)%;">
             @Html.Raw(video.Html)
         </div>
         
@@ -50,3 +65,4 @@
     </div>
 }
 
+</div>
