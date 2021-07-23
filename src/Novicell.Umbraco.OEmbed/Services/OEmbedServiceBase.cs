@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Novicell.Umbraco.OEmbed.Services
 {
-    public abstract class OEmbedServiceBase
+    internal abstract class OEmbedServiceBase
     {
         /*
         private IHttpClientFactory _httpClientFactory;

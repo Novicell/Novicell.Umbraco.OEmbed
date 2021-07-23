@@ -13,8 +13,14 @@ using Umbraco.Cms.Core.Media;
 
 namespace Novicell.Umbraco.OEmbed.Services
 {
-    public class OEmbedDiscoveryService : OEmbedServiceBase, IOEmbedDiscoveryService
+    internal class OEmbedDiscoveryService : OEmbedServiceBase, IOEmbedDiscoveryService
     {
+        private static readonly Regex OEmbedLinkType =
+            new Regex("(application/(?<type>json)|text/(?<type>xml))\\+oembed", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        private static readonly Regex OEmbedLinkRel =
+            new Regex("alternate|alternative", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<OEmbedDiscoveryService> _logger;
 
@@ -47,7 +53,7 @@ namespace Novicell.Umbraco.OEmbed.Services
 
             var html = new HtmlAgilityPack.HtmlDocument();
 
-            Uri endpoint = null;
+            Uri endpoint;
 
             try
             {
@@ -87,31 +93,28 @@ namespace Novicell.Umbraco.OEmbed.Services
 
         private Uri FindOEmbedEndpointUrl(HtmlAgilityPack.HtmlDocument html, Uri url)
         {
-            var type = new Regex("(application/(?<type>json)|text/(?<type>xml))\\+oembed");
-
-            var rel = new Regex("alternate|alternative");
-
-            var links = html.DocumentNode.Descendants()
-                .Where(e => e.Name == "link")
+            var alternateLinks = html.DocumentNode.Descendants()
+                .Where(e => e.NodeType == HtmlAgilityPack.HtmlNodeType.Element && e.Name == "link")
                 .Select(x => new
                 {
                     rel = HttpUtility.HtmlDecode(x.GetAttributeValue("rel", string.Empty)),
                     href = HttpUtility.HtmlDecode(x.GetAttributeValue("href", string.Empty)),
                     type = HttpUtility.HtmlDecode(x.GetAttributeValue("type", string.Empty)),
                 })
-                .Where(x => type.IsMatch(x.type) && rel.IsMatch(x.rel))
+                .Where(x => OEmbedLinkRel.IsMatch(x.rel) && OEmbedLinkType.IsMatch(x.type))
+                .Select(x => x.href)
                 .ToList();
 
-            if (links.Any())
+            if (alternateLinks.Any())
             {
-                foreach (var link in links)
+                foreach (var link in alternateLinks)
                 {
-                    if (!Uri.TryCreate(link.href, UriKind.RelativeOrAbsolute, out var href))
+                    if (!Uri.TryCreate(link, UriKind.RelativeOrAbsolute, out var _url))
                     {
                         continue;
                     }
 
-                    return href.IsAbsoluteUri ? href : new Uri(url, href);
+                    return _url.IsAbsoluteUri ? _url : new Uri(url, _url);
                 }
             }
 
@@ -129,7 +132,7 @@ namespace Novicell.Umbraco.OEmbed.Services
                 RequestParams = GetRequestParameters(endpoint.Query);
             }
 
-            private static Dictionary<string, string> GetRequestParameters(string query)
+            public static Dictionary<string, string> GetRequestParameters(string query)
             {
                 if (string.IsNullOrWhiteSpace(query))
                 {

@@ -19,7 +19,7 @@ using Umbraco.Cms.Core.Media.EmbedProviders;
 
 namespace Novicell.Umbraco.OEmbed.Media
 {
-    public class OEmbedService : OEmbedServiceBase, IOEmbedService
+    internal class OEmbedService : OEmbedServiceBase, IOEmbedService
     {
         private readonly EmbedProvidersCollection _providers;
         private readonly IHttpClientFactory _httpClientFactory;
@@ -68,11 +68,12 @@ namespace Novicell.Umbraco.OEmbed.Media
 
         private async Task<Uri> GetOEmbedUrlAsync(Uri url, int maxwidth, int maxheight)
         {
+            var isUrlMatch = new Func<string, string[], bool>((url, patterns)
+                => patterns.Any(p => Regex.IsMatch(url, p, RegexOptions.IgnoreCase)));
+
             var provider = _providers?
-                .FirstOrDefault(p => p
-                    .UrlSchemeRegex
-                    .Any(pattern => Regex
-                        .IsMatch(url.AbsoluteUri, pattern, RegexOptions.IgnoreCase)));
+                .Where(x => x.UrlSchemeRegex != null)
+                .FirstOrDefault(x => isUrlMatch(url.AbsoluteUri, x.UrlSchemeRegex));
 
             if (provider == null && _settings?.Autodiscover == true)
             {
@@ -88,6 +89,7 @@ namespace Novicell.Umbraco.OEmbed.Media
             {
                 case null:
                     return null;
+
                 case EmbedProviderBase providerBase:
                 {
                     var providerUrl = providerBase.GetEmbedProviderUrl(url.ToString(), maxwidth, maxheight);
