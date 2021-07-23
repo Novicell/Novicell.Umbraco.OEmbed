@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Novicell.Umbraco.OEmbed.Configuration.Models;
 using Novicell.Umbraco.OEmbed.Media;
+using Novicell.Umbraco.OEmbed.PropertyEditors;
 using Novicell.Umbraco.OEmbed.Services;
 using Umbraco.Cms.Core.DependencyInjection;
 
@@ -22,6 +23,10 @@ namespace Novicell.Umbraco.OEmbed
             }
 
             options.ValidateDataAnnotations();
+
+            builder.BackOfficeAssets()
+                .Append<OEmbedPropertyEditor.OEmbedJavaScriptFile>()
+                .Append<OEmbedPropertyEditor.OEmbedCssFile>();
 
             builder.Services.AddScoped<IOEmbedService, OEmbedService>();
 
