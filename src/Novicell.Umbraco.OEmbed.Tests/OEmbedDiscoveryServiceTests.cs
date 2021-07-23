@@ -77,6 +77,7 @@ namespace Novicell.Umbraco.OEmbed.Tests
 
             Assert.Equal("https://www.youtube.com/oembed", provider.Result.ApiEndpoint);
 
+            Assert.Equal("json", provider.Result.RequestParams["format"]);
             Assert.Equal(url.AbsoluteUri, provider.Result.RequestParams["url"]);
         }
     }

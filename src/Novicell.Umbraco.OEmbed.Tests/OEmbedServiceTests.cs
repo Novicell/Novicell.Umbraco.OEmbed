@@ -95,8 +95,8 @@ namespace Novicell.Umbraco.OEmbed.Tests
             if (embed.Result.TryGetValue("upload_date", out var uploadDateToken) && 
                 DateTime.TryParse(uploadDateToken.Value<string>(), out var uploadDate))
             {
-                Assert.NotNull(uploadDate);
-                Assert.NotEqual(default(DateTime), uploadDate);
+                /*Assert.NotNull(uploadDate);*/
+                Assert.NotEqual(default, uploadDate);
             }
         }
 
