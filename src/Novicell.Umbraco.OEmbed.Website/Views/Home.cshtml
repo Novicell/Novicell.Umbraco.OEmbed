@@ -1,10 +1,10 @@
-﻿@using Umbraco.Cms.Core.Models.PublishedContent
-@using Umbraco.Cms.Web.Common.PublishedModels;
-@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.Home>
-@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
-@using System.Globalization
-@using Novicell.Umbraco.OEmbed.Models
+﻿@using System.Globalization
 @using Umbraco.Core.Models
+@using Umbraco.Cms.Core.Models.PublishedContent
+@using Umbraco.Cms.Web.Common.PublishedModels;
+@using Novicell.Umbraco.OEmbed.Models
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.Home>
 @{
 	Layout = null;
 }
@@ -51,7 +51,7 @@
         video.Height.Value / video.Width.Value :
         0;
 
-    <div class="embed" data-ratio="@ratio" >
+    <div class="embed" data-ratio="@ratio">
         <div class="embed__item embed__item--@(video.Type?.ToLower())" style="padding-bottom: @Math.Round(ratio * 100, 2).ToString(CultureInfo.InvariantCulture)%;">
             @Html.Raw(video.Html)
         </div>
@@ -61,7 +61,6 @@
         {
             <p>Upload from @video.ProviderName: @uploadDate</p>
         }
-
     </div>
 }
 

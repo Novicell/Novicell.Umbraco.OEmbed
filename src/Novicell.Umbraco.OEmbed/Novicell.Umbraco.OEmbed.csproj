@@ -5,11 +5,20 @@
         <Product>Novicell.Umbraco.OEmbed</Product>
         <PackageId>Novicell.Umbraco.OEmbed</PackageId>
         <Title>Novicell.Umbraco.OEmbed</Title>
-        <Description>...</Description>
-        <Product>...</Product>
-        <PackageTags>novicell umbraco oembed</PackageTags>
-        <Version>9.0.0-beta002</Version>
-        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <Description>OEmbed propertyeditor for Umbraco.</Description>
+        <Product>Novicell.Umbraco.OEmbed</Product>
+        <PackageTags>novicell umbraco oembed plugin propertyeditor editor video embed link photo image</PackageTags>
+        <Version>9.0.0-beta001</Version>
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+        <RepositoryUrl>https://github.com/Novicell/Novicell.Umbraco.OEmbed</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/Novicell/Novicell.Umbraco.OEmbed</PackageProjectUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+      <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+      <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     </PropertyGroup>
 
     <ItemGroup>
