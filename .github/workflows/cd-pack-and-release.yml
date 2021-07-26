@@ -19,7 +19,7 @@ jobs:
         git branch --remote --contains | grep origin/main
     - name: Get version
       id: get_version
-      run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+      run: echo "##[set-output name=VERSION;]$(echo ${GITHUB_REF#refs/heads/})"
     - name: output VERSION
       run: echo "${{ steps.get_version.outputs.VERSION }}"
     - name: Branch name
