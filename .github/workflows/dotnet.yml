@@ -23,8 +23,8 @@ jobs:
       run: dotnet test ./src/ --no-build --verbosity normal
 
   deploy:
-    needs:build
-    runs-on:windows-latest
+    needs: build
+    runs-on: windows-latest
 
     steps:
       - name: Pack Nuget package
