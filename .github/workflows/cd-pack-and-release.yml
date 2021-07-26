@@ -2,6 +2,11 @@ name: Pack and Release
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version'
+        required: true
+        default: '0.0.0'
   push:
     tags:
       - "*"
@@ -13,14 +18,20 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+    - name: set version from workflow_dispatch
+      if: github.event_name == 'workflow_dispatch'
+      env:
+        VERSION: ${{ github.event.inputs.version }}"
+    - name: set version from tag
+      if: startsWith(github.ref, 'refs/tags/')
+      env:
+        VERSION: ${{ github.ref#refs/tags/ }}"
     - name: Verify commit exists in origin/main
       run: |
         git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
         git branch --remote --contains | grep origin/main
-    - name: Dump GitHub context
-      env:
-        GITHUB_REF: ${{ github.ref }}
-      run: echo "$GITHUB_REF"
+    - name: Dump version
+      run: echo "$VERSION"
 #    - name: ref...
 #      run: echo "${{GITHUB_REF}}"
 #    - name: Set VERSION variable from tag
