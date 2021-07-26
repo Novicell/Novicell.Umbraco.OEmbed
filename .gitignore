@@ -380,3 +380,5 @@ FodyWeavers.xsd
 
 # Ignore the Models Builder models out of date flag
 **/umbraco/models/*
+/src/Novicell.Umbraco.OEmbed.Website/App_Plugins/
+/src/Novicell.Umbraco.OEmbed.Website/umbraco/
