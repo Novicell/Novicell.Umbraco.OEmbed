@@ -29,7 +29,11 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/')
       shell: bash
       run: |
-        echo "VERSION=${{ github.ref:11 }}" >> $GITHUB_ENV
+        echo "VERSION=${{ github.ref }}" >> $GITHUB_ENV
+
+    - name: tag number
+      shell: bash
+      run : echo ${{ github.event.release.tag_name }}
 
     - name: echo version
       run: echo "${{ env.VERSION }}"
