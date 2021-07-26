@@ -25,7 +25,7 @@ jobs:
   deploy:
     needs:build
     runs-on:windows-latest
-    
+
     steps:
       - name: Pack Nuget package
         run: dotnet pack ./src/
