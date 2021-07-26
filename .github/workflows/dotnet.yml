@@ -6,7 +6,6 @@ on:
 
 jobs:
   build:
-
     runs-on: windows-latest
 
     steps:
@@ -16,11 +15,11 @@ jobs:
       with:
         dotnet-version: 5.0.x
     - name: Restore dependencies
-      run: dotnet restore ./src/
+      run: dotnet restore ./src/ --configuration Release
     - name: Build
-      run: dotnet build ./src/ --no-restore
+      run: dotnet build ./src/ --no-restore --configuration Release
     - name: Test
-      run: dotnet test ./src/ --no-build --verbosity normal
+      run: dotnet test ./src/ --no-build --verbosity normal --configuration Release
 
   deploy:
     if: github.ref == 'refs/heads/main'
@@ -29,5 +28,4 @@ jobs:
 
     steps:
       - name: Pack Nuget package
-        run: dotnet pack ./src/
-              --configuration Release 
+        run: dotnet pack ./src/ --configuration Release
