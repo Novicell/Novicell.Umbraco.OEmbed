@@ -40,7 +40,7 @@ jobs:
         echo "action_state=${{ github.ref }}" >> $GITHUB_ENV
 
     - name: echo version
-      run: echo "${{VERSION}}"
+      run: echo "${{env.VERSION}}"
 
 
 #    - name: ref...
