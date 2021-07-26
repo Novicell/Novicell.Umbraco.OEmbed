@@ -21,11 +21,11 @@ jobs:
     - name: set version from workflow_dispatch
       if: github.event_name == 'workflow_dispatch'
       env:
-        VERSION: ${{ github.event.inputs.version }}"
+        VERSION: "${{ github.event.inputs.version }}"
     - name: set version from tag
       if: startsWith(github.ref, 'refs/tags/')
       env:
-        VERSION: ${{ github.ref#refs/tags/ }}"
+        VERSION: "${{ github.ref#refs/tags/ }}"
     - name: Verify commit exists in origin/main
       run: |
         git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
