@@ -1,15 +1,23 @@
 name: Build and Release
 on:
   push:
-  pull_request:
+    tags:
+    - "release-[0-9]+.[0-9]+.[0-9]+"
 
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
+    - name: Checkout
     - uses: actions/checkout@v2
-    - name: Setup .NET
+    - name: Verify commit exists in origin/main
+      run: |
+        git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
+        git branch --remote --contains | grep origin/main
+    - name: Set VERSION variable from tag
+      run: echo "VERSION=${GITHUB_REF/refs\/tags\/release-/}" >> $GITHUB_ENV
+     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
@@ -19,6 +27,12 @@ jobs:
       run: dotnet pack ./src/
     - name: Push
       run: dotnet pack ./src/
-      
-  release:
-    runs-on: windows-latest
+
+    - name: Build
+      run: dotnet build --configuration release /p:Version=${VERSION}
+    - name: Test
+      run: dotnet test --configuration release /p:Version=${VERSION} --no-build
+    - name: Pack
+      run: dotnet pack --configuration release /p:Version=${VERSION} --no-build --output .
+#    - name: Push
+#      run: dotnet nuget push NuGet.Workflow.${VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
