@@ -21,18 +21,26 @@ jobs:
 
     - name: Extract branch name
       shell: bash
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-      id: extract_branch
+      run: |
+        echo "##[set-output name=REF_BRANCH;]$(echo ${GITHUB_REF#refs/*/})"
+        echo "##[set-output name=REF_TAG;]$(echo ${GITHUB_REF#refs/tags/})"
+        echo "##[set-output name=REF_HEAD;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_ref
     
     - name: ddd
-      run: echo ${{ steps.extract_branch.outputs.branch }}
+      run: |
+        echo ${{ steps.extract_ref.outputs.REF_BRANCH }}
+        echo ${{ steps.extract_ref.outputs.REF_TAG }}
+        echo ${{ steps.extract_ref.outputs.REF_HEAD }}
 
     - name: Set the value
+      shell: bash
       id: step_one
       run: |
         echo "action_state=yellow" >> $GITHUB_ENV
 
     - name: Use the value
+      shell: bash
       id: step_two
       run: |
         echo "${{ env.action_state }}" # This will output 'yellow'
