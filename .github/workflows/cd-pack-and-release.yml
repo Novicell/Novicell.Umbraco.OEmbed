@@ -25,13 +25,13 @@ jobs:
       if: github.event_name == 'workflow_dispatch'
       env:
         VERSION: "${{ github.event.inputs.version }}"
-      run: echo "${VERSION}"
+      run: echo "${GITHUB_ENV}"
 
     - name: set version from tag
       if: startsWith(github.ref, 'refs/tags/')
       env:
         VERSION: "${{ github.ref }}"
-      run: echo "${VERSION}"
+      run: echo "${GITHUB_ENV}"
 
 #    - name: ref...
 #      run: echo "${{GITHUB_REF}}"
