@@ -21,7 +21,7 @@ jobs:
       id: extract_branch
       run: echo ::set-output name=value::${GITHUB_REF:11}
     - name: dump...
-      run: echo "${{ toJson(extract_branch) }}"
+      run: echo "${{ toJson(steps.extract_branch.outputs) }}"
     - name: Print github ref
       # THIS GETS PASSED THROUGH AS "refs/heads/<branch name>"
       run: echo "$GITHUB_REF"
