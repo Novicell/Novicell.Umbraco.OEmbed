@@ -1,4 +1,4 @@
-name: .NET
+name: Build and Deploy
 
 on:
   push:
@@ -16,8 +16,17 @@ jobs:
       with:
         dotnet-version: 5.0.x
     - name: Restore dependencies
-      run: dotnet restore .\src\Novicell.Umbraco.OEmbed.sln
+      run: dotnet restore ./src/
     - name: Build
-      run: dotnet build .\src\Novicell.Umbraco.OEmbed.sln --no-restore
+      run: dotnet build ./src/ --no-restore
     - name: Test
-      run: dotnet test .\src\Novicell.Umbraco.OEmbed.sln --no-build --verbosity normal
+      run: dotnet test ./src/ --no-build --verbosity normal
+
+  deploy:
+    needs:build
+    runs-on:windows-latest
+    
+    steps:
+      - name: Pack Nuget package
+        run: dotnet pack ./src/
+              --configuration Release 
