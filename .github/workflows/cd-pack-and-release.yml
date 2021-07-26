@@ -23,19 +23,15 @@ jobs:
 
     - name: set version from workflow_dispatch
       if: github.event_name == 'workflow_dispatch'
-      env:
-        VERSION: "${{ github.event.inputs.version }}"
-      run: |
-        echo We can use a variable multiple time: $VERSION
-        echo inside a multi-line script: $VERSION
+      run: echo '::set-output name=VERSION::${{ github.event.inputs.version }}'
 
     - name: set version from tag
       if: startsWith(github.ref, 'refs/tags/')
-      env:
-        VERSION: "${{ github.ref }}"
-      run: |
-        echo We can use a variable multiple time: $VERSION
-        echo inside a multi-line script: $VERSION
+      run: echo '::set-output name=VERSION::${{ github.ref }}'
+
+    - name: echo version
+      run: echo "${{VERSION}}"
+
 
 #    - name: ref...
 #      run: echo "${{GITHUB_REF}}"
