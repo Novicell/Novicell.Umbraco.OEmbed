@@ -17,6 +17,9 @@ jobs:
       run: |
         git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
         git branch --remote --contains | grep origin/main
+    - name: Print github ref
+      # THIS GETS PASSED THROUGH AS "refs/heads/<branch name>"
+      run: echo ${GITHUB_REF}
     - name: dump...
       run: echo "${{ toJson(github.ref) }}"
     - name: Get version
