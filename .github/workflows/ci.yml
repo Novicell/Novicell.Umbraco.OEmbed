@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: Build and Test
 
 on:
   push:
@@ -20,12 +20,3 @@ jobs:
       run: dotnet build ./src/ --no-restore --configuration Release
     - name: Test
       run: dotnet test ./src/ --no-build --verbosity normal --configuration Release
-
-  deploy:
-    if: github.ref == 'refs/heads/main'
-    needs: build
-    runs-on: windows-latest
-
-    steps:
-      - name: Pack Nuget package
-        run: dotnet pack ./src/ --verbosity normal --configuration Release
