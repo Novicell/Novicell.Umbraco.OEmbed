@@ -28,4 +28,4 @@ jobs:
 
     steps:
       - name: Pack Nuget package
-        run: dotnet pack ./src/ --configuration Release
+        run: dotnet pack ./src/ --verbosity normal --configuration Release
