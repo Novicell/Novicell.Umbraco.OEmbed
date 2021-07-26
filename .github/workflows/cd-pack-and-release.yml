@@ -20,7 +20,7 @@ jobs:
     - name: github.ref output
       run: echo "${{github.ref}}"
     - name: ref...
-      run: echo "${GITHUB_REF}"
+      run: echo "${{GITHUB_REF}}"
 #    - name: Set VERSION variable from tag
 #      run: echo "VERSION=${GITHUB_REF/refs\/tags\/release\-/}" >> $GITHUB_ENV
 #    - name: Set VERSION variable from tag
