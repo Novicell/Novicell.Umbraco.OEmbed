@@ -19,8 +19,8 @@ jobs:
         git branch --remote --contains | grep origin/main
     - name: Dump GitHub context
       env:
-        GITHUB_CONTEXT: ${{ toJSON(github) }}
-      run: echo "$GITHUB_CONTEXT"
+        GITHUB_REF: ${{ github.ref }}
+      run: echo "$GITHUB_REF"
 #    - name: ref...
 #      run: echo "${{GITHUB_REF}}"
 #    - name: Set VERSION variable from tag
