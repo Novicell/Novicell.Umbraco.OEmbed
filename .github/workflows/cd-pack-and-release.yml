@@ -1,4 +1,4 @@
-name: Build and Release
+name: Pack and Release
 on:
   workflow_dispatch:
   push:
