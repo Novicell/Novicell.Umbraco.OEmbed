@@ -1,0 +1,24 @@
+name: Build and Release
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+    - name: Build
+      run: dotnet build ./src/
+    - name: Pack
+      run: dotnet pack ./src/
+    - name: Push
+      run: dotnet pack ./src/
+      
+  release:
+    runs-on: windows-latest
