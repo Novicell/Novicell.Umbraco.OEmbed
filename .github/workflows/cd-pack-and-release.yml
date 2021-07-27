@@ -16,7 +16,7 @@ on:
         required: true
         default: 'true'
   release:
-    types: [published, created, edited, prereleased, released]
+    types: [published]
 
 jobs:
   build:
