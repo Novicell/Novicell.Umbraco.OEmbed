@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Mime;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
@@ -15,6 +16,15 @@ namespace Novicell.Umbraco.OEmbed.Services
 {
     internal class OEmbedDiscoveryService : OEmbedServiceBase, IOEmbedDiscoveryService
     {
+        private static class OEmbedMediaTypeNames
+		{
+            private const string suffix = "+oembed";
+
+            public const string TextXml = MediaTypeNames.Text.Xml + suffix;
+            public const string ApplicationJson = MediaTypeNames.Application.Json + suffix;
+        }
+
+
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<OEmbedDiscoveryService> _logger;
 
@@ -91,12 +101,13 @@ namespace Novicell.Umbraco.OEmbed.Services
                 .Where(e => e.NodeType == HtmlAgilityPack.HtmlNodeType.Element && e.Name == "link")
                 .Select(x => new
                 {
-                    rel = HttpUtility.HtmlDecode(x.GetAttributeValue("rel", string.Empty)),
-                    href = HttpUtility.HtmlDecode(x.GetAttributeValue("href", string.Empty)),
-                    type = HttpUtility.HtmlDecode(x.GetAttributeValue("type", string.Empty)),
+                    rel = HttpUtility.HtmlDecode(x.GetAttributeValue("rel", string.Empty))?.ToLowerInvariant(),
+                    type = HttpUtility.HtmlDecode(x.GetAttributeValue("type", string.Empty))?.ToLowerInvariant(),
+                    href = HttpUtility.HtmlDecode(x.GetAttributeValue("href", string.Empty))?.ToLowerInvariant(),
                 })
                 .Where(x => IsAlternateOrAlternative(x.rel) && 
-                            IsApplicationJsonOrTextXmlWithOEmbedSuffix(x.type))
+                            IsApplicationJsonOrTextXmlWithOEmbedSuffix(x.type) &&
+                            !string.IsNullOrWhiteSpace(x.href))
                 .Select(x => x.href)
                 .ToList();
 
@@ -116,31 +127,17 @@ namespace Novicell.Umbraco.OEmbed.Services
             return null;
         }
 
-        private static bool IsApplicationJsonOrTextXmlWithOEmbedSuffix(string mimeType)
+        private static bool IsApplicationJsonOrTextXmlWithOEmbedSuffix(string type)
         {
-            if (string.IsNullOrWhiteSpace(mimeType))
+            if (string.IsNullOrWhiteSpace(type))
             {
                 return false;
             }
 
-            var indexOfPlus = mimeType.LastIndexOf('+');
-
-            string suffix = null;
-
-            if (indexOfPlus >= 0)
+            return type.ToLower() switch
             {
-                suffix = mimeType.Substring(indexOfPlus);
-                mimeType = mimeType.Substring(0, indexOfPlus);
-            }
-
-            if (suffix != "oembed")
-            {
-                return false;
-            }
-
-            return mimeType.ToLower() switch
-            {
-                "text/css" or "application/json" => true,
+                OEmbedMediaTypeNames.ApplicationJson => true,
+                OEmbedMediaTypeNames.TextXml => true,
                 _ => false,
             };
         }
