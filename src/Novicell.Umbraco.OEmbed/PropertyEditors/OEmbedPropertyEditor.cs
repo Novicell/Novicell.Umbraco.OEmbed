@@ -12,7 +12,7 @@ namespace Novicell.Umbraco.OEmbed.PropertyEditors
     /// <inheritdoc />
     [DataEditor(PropertyEditorAlias, "Novicell OEmbed",
         PluginFolder + "oembed.propertyeditor.html", Group = "media", ValueType = ValueTypes.Json)]
-    public class OEmbedPropertyEditor : DataEditor
+    internal class OEmbedPropertyEditor : DataEditor
     {
         public class OEmbedJavaScriptFile : JavaScriptFile
         {

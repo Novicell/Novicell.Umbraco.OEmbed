@@ -15,7 +15,7 @@ namespace Novicell.Umbraco.OEmbed.PropertyEditors
             ConfigureTypeField(type);
         }
 
-        private void ConfigureTypeField(ConfigurationField field)
+        private static void ConfigureTypeField(ConfigurationField field)
         {
             var types = new[]
             {

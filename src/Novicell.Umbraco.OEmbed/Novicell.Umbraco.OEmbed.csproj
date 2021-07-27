@@ -1,50 +1,50 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
-        <ContentTargetFolders>.</ContentTargetFolders>
-        <Product>Novicell.Umbraco.OEmbed</Product>
-        <PackageId>Novicell.Umbraco.OEmbed</PackageId>
-        <Title>Novicell.Umbraco.OEmbed</Title>
-        <Description>OEmbed propertyeditor for Umbraco.</Description>
-        <Product>Novicell.Umbraco.OEmbed</Product>
-        <PackageTags>novicell umbraco oembed plugin propertyeditor editor video embed link photo image</PackageTags>
-        <Version>1.0.0</Version>
-        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-        <RepositoryUrl>https://github.com/Novicell/Novicell.Umbraco.OEmbed</RepositoryUrl>
-        <PackageProjectUrl>https://github.com/Novicell/Novicell.Umbraco.OEmbed</PackageProjectUrl>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-      <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-      <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <ContentTargetFolders>.</ContentTargetFolders>
+    <Product>Novicell.Umbraco.OEmbed</Product>
+    <PackageId>Novicell.Umbraco.OEmbed</PackageId>
+    <Title>Novicell.Umbraco.OEmbed</Title>
+    <Description>OEmbed propertyeditor for Umbraco.</Description>
+    <Product>Novicell.Umbraco.OEmbed</Product>
+    <PackageTags>novicell umbraco oembed plugin propertyeditor editor video embed link photo image</PackageTags>
+    <Version>1.0.0-dev</Version>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <RepositoryUrl>https://github.com/Novicell/Novicell.Umbraco.OEmbed</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Novicell/Novicell.Umbraco.OEmbed</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Umbraco.Cms.Core" Version="[9.0.*-*,10)" />
-        <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="[9.0.*-*,10)" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Umbraco.Cms.Core" Version="9.0.0-rc001" />
+    <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="9.0.0-rc001" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <Content Include="App_Plugins\Novicell.OEmbed\**\*.*">
-            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-            <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-        </Content>
-        <None Include="build\**\*.*">
-            <Pack>True</Pack>
-            <PackagePath>build</PackagePath>
-        </None>
-    </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_Plugins\Novicell.OEmbed\**\*.*">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    </Content>
+    <None Include="build\**\*.*">
+      <Pack>True</Pack>
+      <PackagePath>build</PackagePath>
+    </None>
+  </ItemGroup>
 
-    <ItemGroup>
-      <Content Remove="App_Plugins\Novicell.OEmbed\Lang\da-dk.xml" />
-      <Content Remove="App_Plugins\Novicell.OEmbed\Lang\en-us.xml" />
-    </ItemGroup>
+  <ItemGroup>
+    <Content Remove="App_Plugins\Novicell.OEmbed\Lang\da-dk.xml" />
+    <Content Remove="App_Plugins\Novicell.OEmbed\Lang\en-us.xml" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Properties\" />
-    </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
 
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">

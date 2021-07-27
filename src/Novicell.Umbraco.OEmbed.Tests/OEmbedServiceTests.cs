@@ -3,13 +3,11 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
-using Novicell.Umbraco.OEmbed.Composing;
 using Novicell.Umbraco.OEmbed.Configuration.Models;
 using Novicell.Umbraco.OEmbed.Media;
 using Novicell.Umbraco.OEmbed.Services;
 using Umbraco.Cms.Core.Media;
 using Umbraco.Cms.Core.Media.EmbedProviders;
-using Umbraco.Cms.Core.Serialization;
 using Umbraco.Cms.Infrastructure.Serialization;
 using Xunit;
 
@@ -38,7 +36,7 @@ namespace Novicell.Umbraco.OEmbed.Tests
                 new Soundcloud(jsonSerializer),
             });
 
-            EmptyEmbedProvidersCollection = new EmbedProvidersCollection(new IEmbedProvider[0]);
+            EmptyEmbedProvidersCollection = new EmbedProvidersCollection(Array.Empty<IEmbedProvider>());
         }
 
         [Fact]

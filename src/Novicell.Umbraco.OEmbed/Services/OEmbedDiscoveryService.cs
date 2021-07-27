@@ -15,12 +15,6 @@ namespace Novicell.Umbraco.OEmbed.Services
 {
     internal class OEmbedDiscoveryService : OEmbedServiceBase, IOEmbedDiscoveryService
     {
-        private static readonly Regex OEmbedLinkType =
-            new Regex("(application/(?<type>json)|text/(?<type>xml))\\+oembed", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-
-        private static readonly Regex OEmbedLinkRel =
-            new Regex("alternate|alternative", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<OEmbedDiscoveryService> _logger;
 
@@ -91,7 +85,7 @@ namespace Novicell.Umbraco.OEmbed.Services
             return Attempt.Fail<IEmbedProvider>(null);
         }
 
-        private Uri FindOEmbedEndpointUrl(HtmlAgilityPack.HtmlDocument html, Uri url)
+        private static Uri FindOEmbedEndpointUrl(HtmlAgilityPack.HtmlDocument html, Uri url)
         {
             var alternateLinks = html.DocumentNode.Descendants()
                 .Where(e => e.NodeType == HtmlAgilityPack.HtmlNodeType.Element && e.Name == "link")
@@ -101,7 +95,8 @@ namespace Novicell.Umbraco.OEmbed.Services
                     href = HttpUtility.HtmlDecode(x.GetAttributeValue("href", string.Empty)),
                     type = HttpUtility.HtmlDecode(x.GetAttributeValue("type", string.Empty)),
                 })
-                .Where(x => OEmbedLinkRel.IsMatch(x.rel) && OEmbedLinkType.IsMatch(x.type))
+                .Where(x => IsAlternateOrAlternative(x.rel) && 
+                            IsApplicationJsonOrTextXmlWithOEmbedSuffix(x.type))
                 .Select(x => x.href)
                 .ToList();
 
@@ -119,6 +114,40 @@ namespace Novicell.Umbraco.OEmbed.Services
             }
 
             return null;
+        }
+
+        private static bool IsApplicationJsonOrTextXmlWithOEmbedSuffix(string mimeType)
+        {
+            if (string.IsNullOrWhiteSpace(mimeType))
+            {
+                return false;
+            }
+
+            var indexOfPlus = mimeType.LastIndexOf('+');
+
+            string suffix = null;
+
+            if (indexOfPlus >= 0)
+            {
+                suffix = mimeType.Substring(indexOfPlus);
+                mimeType = mimeType.Substring(0, indexOfPlus);
+            }
+
+            if (suffix != "oembed")
+            {
+                return false;
+            }
+
+            return mimeType.ToLower() switch
+            {
+                "text/css" or "application/json" => true,
+                _ => false,
+            };
+        }
+
+        private static bool IsAlternateOrAlternative(string rel)
+        {
+            return rel == "alternate" || rel == "alternative";
         }
 
         internal sealed class AutodiscoverEmbedProvider : IEmbedProvider
