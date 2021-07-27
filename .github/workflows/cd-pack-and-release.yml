@@ -46,6 +46,21 @@ jobs:
       with:
         dotnet-version: 5.0.x
 
+    - name: Cache dependencies
+      uses: actions/cache@v2
+      with:
+        path: ~/.nuget/packages
+        # Look to see if there is a cache hit for the corresponding requirements file
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget
+
+    - name: Restore dependencies
+      run: dotnet restore ./src/
+
+    - name: Build
+      run: dotnet build ./src/ --no-restore
+
     - name: Build
       run: dotnet build ./src/ --configuration release -p:Version=${{env.VERSION}}
 
