@@ -1,10 +1,7 @@
 name: Build and Test
 
 on:
-  workflow_dispatch:
-    inputs:
-      branch:
-        
+  workflow_dispatch:        
   push:
   pull_request:
 
