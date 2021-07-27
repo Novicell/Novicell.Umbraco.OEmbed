@@ -10,7 +10,7 @@ on:
       version:
         description: 'Version'
         required: true
-        default: '0.0.0'
+        default: '1.0.0-dev'
       prerelease:
         description: 'This is a pre-release'
         required: true
@@ -38,9 +38,6 @@ jobs:
         echo "VERSION=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
         echo "PRE_RELEASE=${{ github.event.release.prerelease }}" >> $GITHUB_ENV
 
-    - name: Dump VERSION context
-      run: echo "${{ env.VERSION }}"
-
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
@@ -59,14 +56,15 @@ jobs:
       run: dotnet restore ./src/
 
     - name: Build
-      run: dotnet build ./src/ --no-restore --configuration release
+      run: dotnet build ./src/ --no-restore --configuration release -p:Version=${{env.VERSION}}
 
     - name: Test
-      run: dotnet test ./src/ --configuration release --no-build
+      run: dotnet test ./src/ --configuration release --no-build -p:Version=${{env.VERSION}}
 
     - name: Pack
       run: dotnet pack ./src/ --configuration release --no-build -p:Version=${{env.VERSION}} --output . 
 
     - name: Push
       run: dotnet nuget push ./*.${{env.VERSION}}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
+      if: github.event_name == 'release'
 
