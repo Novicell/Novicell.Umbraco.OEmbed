@@ -1,7 +1,7 @@
 name: Build and Test
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:        
   push:
   pull_request:
 
@@ -10,21 +10,29 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v2
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
-    - uses: actions/cache@v2
+
+    - name: Cache dependencies
+      uses: actions/cache@v2
       with:
         path: ~/.nuget/packages
         # Look to see if there is a cache hit for the corresponding requirements file
         key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
         restore-keys: |
           ${{ runner.os }}-nuget
+
     - name: Restore dependencies
       run: dotnet restore ./src/
+
     - name: Build
       run: dotnet build ./src/ --no-restore
+
     - name: Test
       run: dotnet test ./src/ --no-build
