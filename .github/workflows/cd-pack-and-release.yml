@@ -8,6 +8,7 @@ on:
         required: true
         default: '0.0.0'
   release:
+    types: [published]
 
 jobs:
   build:
@@ -29,24 +30,20 @@ jobs:
       run: |
         echo "VERSION=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
 
-    - name: echo version
-      run: echo "${{ env.VERSION }}"
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
 
+    - name: Build
+      run: dotnet build ./src/ --configuration release /p:Version=${env.VERSION}
 
-#    - name: Setup .NET
-#      uses: actions/setup-dotnet@v1
-#      with:
-#        dotnet-version: 5.0.x
+    - name: Test
+      run: dotnet test ./src/ --configuration release /p:Version=${env.VERSION} --no-build
 
-#    - name: Build
-#      run: dotnet build ./src/ --configuration release /p:Version=${env.VERSION}
-
-#    - name: Test
-#      run: dotnet test ./src/ --configuration release /p:Version=${env.VERSION} --no-build
-
-#    - name: Pack
-#      run: dotnet pack ./src/ --configuration release /p:Version=${env.VERSION} --no-build --output .
+    - name: Pack
+      run: dotnet pack ./src/ --configuration release /p:Version=${env.VERSION} --no-build --output .
 
 #    - name: Push
 #      run: dotnet nuget push NuGet.Workflow.${VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
-      if: startsWith(env.VERSION, '0.0.0') == false
+#      if: startsWith(env.VERSION, '0.0.0') == false
