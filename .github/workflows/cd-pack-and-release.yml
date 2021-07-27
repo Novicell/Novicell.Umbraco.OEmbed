@@ -1,5 +1,9 @@
 name: Pack and Release
 
+defaults:
+  run:
+    shell: bash
+
 on:
   workflow_dispatch:
     inputs:
@@ -20,18 +24,15 @@ jobs:
 
     - name: set version from workflow_dispatch
       if: github.event_name == 'workflow_dispatch'
-      shell: bash
       run: |
         echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
 
     - name: set version from release
       if: github.event_name == 'release'
-      shell: bash
       run: |
         echo "VERSION=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
 
     - name: Dump VERSION context
-      shell: bash
       run: echo "${{ env.VERSION }}"
 
 #    - name: Setup .NET
