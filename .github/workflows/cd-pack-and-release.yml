@@ -31,7 +31,8 @@ jobs:
         echo "VERSION=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
 
     - name: Dump VERSION context
-      run: echo "$VERSION"
+      shell: bash
+      run: echo "${{ env.VERSION }}"
 
 #    - name: Setup .NET
 #      uses: actions/setup-dotnet@v1
