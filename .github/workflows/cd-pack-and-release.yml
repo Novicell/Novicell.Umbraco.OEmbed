@@ -59,16 +59,13 @@ jobs:
       run: dotnet restore ./src/
 
     - name: Build
-      run: dotnet build ./src/ --no-restore
-
-    - name: Build
-      run: dotnet build ./src/ --configuration release -p:Version=${{env.VERSION}}
+      run: dotnet build ./src/ --no-restore --configuration release
 
     - name: Test
-      run: dotnet test ./src/ --configuration release -p:Version=${env.VERSION} --no-build
+      run: dotnet test ./src/ --configuration release --no-build
 
     - name: Pack
-      run: dotnet pack ./src/ --configuration release -p:Version=${env.VERSION} --no-build --output .
+      run: dotnet pack ./src/ --configuration release --no-build -p:Version=${env.VERSION} --output . 
 
 #    - name: Push
 #      run: dotnet nuget push NuGet.Workflow.${VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
