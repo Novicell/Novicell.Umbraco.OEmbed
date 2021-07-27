@@ -103,7 +103,7 @@ namespace Novicell.Umbraco.OEmbed.Services
                 {
                     rel = HttpUtility.HtmlDecode(x.GetAttributeValue("rel", string.Empty))?.ToLowerInvariant(),
                     type = HttpUtility.HtmlDecode(x.GetAttributeValue("type", string.Empty))?.ToLowerInvariant(),
-                    href = HttpUtility.HtmlDecode(x.GetAttributeValue("href", string.Empty))?.ToLowerInvariant(),
+                    href = HttpUtility.HtmlDecode(x.GetAttributeValue("href", string.Empty)),
                 })
                 .Where(x => IsAlternateOrAlternative(x.rel) && 
                             IsApplicationJsonOrTextXmlWithOEmbedSuffix(x.type) &&
