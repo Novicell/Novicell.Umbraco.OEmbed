@@ -8,7 +8,7 @@
         <Description>OEmbed propertyeditor for Umbraco.</Description>
         <Product>Novicell.Umbraco.OEmbed</Product>
         <PackageTags>novicell umbraco oembed plugin propertyeditor editor video embed link photo image</PackageTags>
-        <Version>9.0.0-beta001</Version>
+        <Version>1.0.0</Version>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
         <RepositoryUrl>https://github.com/Novicell/Novicell.Umbraco.OEmbed</RepositoryUrl>
         <PackageProjectUrl>https://github.com/Novicell/Novicell.Umbraco.OEmbed</PackageProjectUrl>
@@ -22,8 +22,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Umbraco.Cms.Core" Version="9.0.0-rc001" />
-        <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="9.0.0-rc001" />
+        <PackageReference Include="Umbraco.Cms.Core" Version="[9.0.*-*,10)" />
+        <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="[9.0.*-*,10)" />
     </ItemGroup>
 
     <ItemGroup>
