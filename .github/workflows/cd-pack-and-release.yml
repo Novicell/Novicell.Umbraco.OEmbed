@@ -65,8 +65,8 @@ jobs:
       run: dotnet test ./src/ --configuration release --no-build
 
     - name: Pack
-      run: dotnet pack ./src/ --configuration release --no-build -p:Version=${env.VERSION} --output . 
+      run: dotnet pack ./src/ --configuration release --no-build -p:Version=${{env.VERSION}} --output . 
 
-#    - name: Push
-#      run: dotnet nuget push NuGet.Workflow.${VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
-#      if: startsWith(env.VERSION, '0.0.0') == false
+    - name: Push
+      run: dotnet nuget push ./*.${{env.VERSION}}.nupkg --skip-duplicate --source https://api.nuget.org/v3/index.json #--not-api-key ${{ secrets.NUGET_API_KEY }}
+
