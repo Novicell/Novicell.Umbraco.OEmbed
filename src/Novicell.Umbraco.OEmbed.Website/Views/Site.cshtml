@@ -3,4 +3,6 @@
 @using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
 @{
 	Layout = null;
+	var home = Model.Descendant<Home>();
+	this.Context.Response.Redirect(home.Url());
 }
