@@ -68,5 +68,5 @@ jobs:
       run: dotnet pack ./src/ --configuration release --no-build -p:Version=${{env.VERSION}} --output . 
 
     - name: Push
-      run: dotnet nuget push ./*.${{env.VERSION}}.nupkg --skip-duplicate --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
+      run: dotnet nuget push ./*.${{env.VERSION}}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
 
