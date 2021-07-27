@@ -3,6 +3,8 @@ name: Build and Test
 on:
   workflow_dispatch:        
   push:
+    branches-ignore: 
+      - refs/tags/*
   pull_request:
 
 jobs:
