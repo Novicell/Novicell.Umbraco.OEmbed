@@ -30,19 +30,45 @@ jobs:
       run: |
         echo "VERSION=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 5.0.x
+    - name: Dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJSON(github) }}
+      run: echo "$GITHUB_CONTEXT"
+    - name: Dump job context
+      env:
+        JOB_CONTEXT: ${{ toJSON(job) }}
+      run: echo "$JOB_CONTEXT"
+    - name: Dump steps context
+      env:
+        STEPS_CONTEXT: ${{ toJSON(steps) }}
+      run: echo "$STEPS_CONTEXT"
+    - name: Dump runner context
+      env:
+        RUNNER_CONTEXT: ${{ toJSON(runner) }}
+      run: echo "$RUNNER_CONTEXT"
+    - name: Dump strategy context
+      env:
+        STRATEGY_CONTEXT: ${{ toJSON(strategy) }}
+      run: echo "$STRATEGY_CONTEXT"
+    - name: Dump matrix context
+      env:
+        MATRIX_CONTEXT: ${{ toJSON(matrix) }}
+      run: echo "$MATRIX_CONTEXT"
 
-    - name: Build
-      run: dotnet build ./src/ --configuration release /p:Version=${env.VERSION}
 
-    - name: Test
-      run: dotnet test ./src/ --configuration release /p:Version=${env.VERSION} --no-build
+#    - name: Setup .NET
+#      uses: actions/setup-dotnet@v1
+#      with:
+#        dotnet-version: 5.0.x
 
-    - name: Pack
-      run: dotnet pack ./src/ --configuration release /p:Version=${env.VERSION} --no-build --output .
+#    - name: Build
+#      run: dotnet build ./src/ --configuration release /p:Version=${env.VERSION}
+
+#    - name: Test
+#      run: dotnet test ./src/ --configuration release /p:Version=${env.VERSION} --no-build
+
+#    - name: Pack
+#      run: dotnet pack ./src/ --configuration release /p:Version=${env.VERSION} --no-build --output .
 
 #    - name: Push
 #      run: dotnet nuget push NuGet.Workflow.${VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
