@@ -11,6 +11,10 @@ on:
         description: 'Version'
         required: true
         default: '0.0.0'
+      prerelease:
+        description: 'This is a pre-release'
+        required: true
+        default: 'true'
   release:
     types: [published]
 
@@ -26,11 +30,13 @@ jobs:
       if: github.event_name == 'workflow_dispatch'
       run: |
         echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+        echo "PRE_RELEASE='${{ github.event.inputs.prerelease }}'" >> $GITHUB_ENV
 
     - name: set version from release
       if: github.event_name == 'release'
       run: |
         echo "VERSION=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+        echo "PRE_RELEASE=${{ github.event.release.prerelease }}" >> $GITHUB_ENV
 
     - name: Dump VERSION context
       run: echo "${{ env.VERSION }}"
@@ -43,11 +49,11 @@ jobs:
     - name: Build
       run: dotnet build ./src/ --configuration release -p:Version=${{env.VERSION}}
 
-#    - name: Test
-#      run: dotnet test ./src/ --configuration release /p:Version=${env.VERSION} --no-build
+    - name: Test
+      run: dotnet test ./src/ --configuration release -p:Version=${env.VERSION} --no-build
 
-#    - name: Pack
-#      run: dotnet pack ./src/ --configuration release /p:Version=${env.VERSION} --no-build --output .
+    - name: Pack
+      run: dotnet pack ./src/ --configuration release -p:Version=${env.VERSION} --no-build --output .
 
 #    - name: Push
 #      run: dotnet nuget push NuGet.Workflow.${VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
