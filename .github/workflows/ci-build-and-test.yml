@@ -22,7 +22,7 @@ jobs:
       with:
         dotnet-version: 5.0.x
 
-    - name: Restore dependencies
+    - name: Cache dependencies
       uses: actions/cache@v2
       with:
         path: ~/.nuget/packages
