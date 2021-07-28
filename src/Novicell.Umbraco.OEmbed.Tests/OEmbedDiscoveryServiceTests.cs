@@ -14,7 +14,6 @@ namespace Novicell.Umbraco.OEmbed.Tests
     [Trait("Category", "Integration")]
     public class OEmbedDiscoveryServiceTests
     {
-        private readonly ILogger<OEmbedDiscoveryService> _logger = new NullLogger<OEmbedDiscoveryService>();
         private readonly IHttpClientFactory _httpClientFactory = new HttpClientFactory();
 
         [Fact]
@@ -22,7 +21,7 @@ namespace Novicell.Umbraco.OEmbed.Tests
         {
             var url = new Uri("https://0.0.0.0/not-found");
 
-            var discovery = new OEmbedDiscoveryService(_httpClientFactory, _logger);
+            var discovery = new OEmbedDiscoveryService(_httpClientFactory);
 
             var provider = await discovery.DiscoverFromUrlAsync(url);
 
@@ -33,9 +32,9 @@ namespace Novicell.Umbraco.OEmbed.Tests
         [Fact]
         public async Task CanDiscoverFlickrEndpoint()
         {
-            var url = new Uri("https://www.flickr.com/photos/from-reinier/51234040000/in/explore-2021-06-09/");
+            var url = new Uri("https://www.flickr.com/photos/percipientstudios/18009929763");
 
-            var discovery = new OEmbedDiscoveryService(_httpClientFactory, _logger);
+            var discovery = new OEmbedDiscoveryService(_httpClientFactory);
 
             var provider = await discovery.DiscoverFromUrlAsync(url);
 
@@ -49,9 +48,9 @@ namespace Novicell.Umbraco.OEmbed.Tests
         [Fact]
         public async Task CanDiscoverVimeoEndpoint()
         {
-            var url = new Uri("https://vimeo.com/302232607");
+            var url = new Uri("https://vimeo.com/371827688");
 
-            var discovery = new OEmbedDiscoveryService(_httpClientFactory, _logger);
+            var discovery = new OEmbedDiscoveryService(_httpClientFactory);
 
             var provider = await discovery.DiscoverFromUrlAsync(url);
 
@@ -66,9 +65,9 @@ namespace Novicell.Umbraco.OEmbed.Tests
         [Fact]
         public async Task CanDiscoverYoutubeEndpoint()
         {
-            var url = new Uri("https://www.youtube.com/watch?v=vcWehsxBLzs");
+            var url = new Uri("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
 
-            var discovery = new OEmbedDiscoveryService(_httpClientFactory, _logger);
+            var discovery = new OEmbedDiscoveryService(_httpClientFactory);
 
             var provider = await discovery.DiscoverFromUrlAsync(url);
 

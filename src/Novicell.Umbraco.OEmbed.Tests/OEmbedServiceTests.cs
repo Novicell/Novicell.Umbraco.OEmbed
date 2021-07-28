@@ -42,7 +42,7 @@ namespace Novicell.Umbraco.OEmbed.Tests
         [Fact]
         public async Task EmbedSoundcloudRichFromKnownProvider()
         {
-            var oembed = new OEmbedService(SoundCloudOnlyEmbedProvidersCollection, _httpClientFactory, null, null, null);
+            var oembed = new OEmbedService(SoundCloudOnlyEmbedProvidersCollection, _httpClientFactory, null, null);
             var embed = await oembed.GetOEmbedAsync(new Uri("https://soundcloud.com/dj_zanderz/mellemfingamuzik-jungle-zanderz-remix-demo"), 0, 0);
             Assert.True(embed.Success);
             Assert.NotNull(embed.Result);
@@ -52,7 +52,7 @@ namespace Novicell.Umbraco.OEmbed.Tests
         [Fact]
         public async Task EmbedYouTubeVideoFromKnownProvider()
         {
-            var oembed = new OEmbedService(YoutubeOnlyEmbedProvidersCollection, _httpClientFactory, null,null, null);
+            var oembed = new OEmbedService(YoutubeOnlyEmbedProvidersCollection, _httpClientFactory, null,null);
             var embed = await oembed.GetOEmbedAsync(new Uri("https://www.youtube.com/watch?v=0BPL5tT9_2Y"), 0, 0);
             Assert.True(embed.Success);
             Assert.NotNull(embed.Result);
@@ -67,8 +67,8 @@ namespace Novicell.Umbraco.OEmbed.Tests
                 Autodiscover = true,
             });
 
-            var discovery = new OEmbedDiscoveryService(_httpClientFactory, null);
-            var oembed = new OEmbedService(EmptyEmbedProvidersCollection, _httpClientFactory, discovery, settings, null);
+            var discovery = new OEmbedDiscoveryService(_httpClientFactory);
+            var oembed = new OEmbedService(EmptyEmbedProvidersCollection, _httpClientFactory, discovery, settings);
             var embed = await oembed.GetOEmbedAsync(new Uri("https://www.youtube.com/watch?v=0BPL5tT9_2Y"), 0, 0);
             Assert.True(embed.Success);
             Assert.NotNull(embed.Result);
@@ -83,8 +83,8 @@ namespace Novicell.Umbraco.OEmbed.Tests
                 Autodiscover = true,
             });
 
-            var discovery = new OEmbedDiscoveryService(_httpClientFactory, null);
-            var oembed = new OEmbedService(EmptyEmbedProvidersCollection, _httpClientFactory, discovery, settings, null);
+            var discovery = new OEmbedDiscoveryService(_httpClientFactory);
+            var oembed = new OEmbedService(EmptyEmbedProvidersCollection, _httpClientFactory, discovery, settings);
             var embed = await oembed.GetOEmbedAsync(new Uri("https://vimeo.com/251769074"), 0, 0);
             Assert.True(embed.Success);
             Assert.NotNull(embed.Result);
@@ -106,7 +106,7 @@ namespace Novicell.Umbraco.OEmbed.Tests
                 Autodiscover = false,
             });
 
-            var oembed = new OEmbedService(EmptyEmbedProvidersCollection, _httpClientFactory, null, settings, null);
+            var oembed = new OEmbedService(EmptyEmbedProvidersCollection, _httpClientFactory, null, settings);
 
             var embed = await oembed.GetOEmbedAsync(new Uri("https://www.youtube.com/watch?v=0BPL5tT9_2Y"), 0, 0);
             Assert.False(embed.Success);
@@ -117,7 +117,7 @@ namespace Novicell.Umbraco.OEmbed.Tests
         [Fact]
         public async Task FailWhenNoProvidersGiven()
         {
-            var oembed = new OEmbedService(null, _httpClientFactory, null, null, null);
+            var oembed = new OEmbedService(null, _httpClientFactory, null, null);
 
             var embed = await oembed.GetOEmbedAsync(new Uri("https://www.youtube.com/watch?v=0BPL5tT9_2Y"), 0, 0);
             Assert.False(embed.Success);

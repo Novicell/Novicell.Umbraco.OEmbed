@@ -25,20 +25,17 @@ namespace Novicell.Umbraco.OEmbed.Media
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IOEmbedDiscoveryService _discoveryService;
         private readonly OEmbedSettings _settings;
-        private readonly ILogger _logger;
 
         public OEmbedService(
             EmbedProvidersCollection providers,
             IHttpClientFactory httpClientFactory,
             IOEmbedDiscoveryService discoveryService,
-            IOptions<OEmbedSettings> settings,
-            ILogger<OEmbedService> logger)
+            IOptions<OEmbedSettings> settings)
         {
             _providers = providers;
             _httpClientFactory = httpClientFactory;
             _discoveryService = discoveryService;
             _settings = settings?.Value;
-            _logger = logger;
         }
 
         public async Task<Attempt<Models.OEmbedResponse>> GetOEmbedAsync(Uri url, int maxwidth, int maxheight)
@@ -116,21 +113,21 @@ namespace Novicell.Umbraco.OEmbed.Media
             {
                 response.EnsureSuccessStatusCode();
             }
-            catch (Exception e)
+            catch (HttpRequestException e)
             {
                 return Attempt<Models.OEmbedResponse>.Fail(e);
             }
 
             var content = await response.Content.ReadAsStringAsync();
 
-            var type = response.Content.Headers.ContentType;
+            var mediaType = response.Content.Headers.ContentType?.MediaType;
 
-            var json = IsJson(type) ? content :
-                IsXml(type) ? ConvertXmlToJson(content) : null;
+            var json = IsJson(mediaType) ? content :
+                IsXml(mediaType) ? ConvertXmlToJson(content) : null;
 
             if (json == null)
             {
-                return Attempt<Models.OEmbedResponse>.Fail(new Exception($"Invalid response - content type '{type?.MediaType??"unkown"}' not supported"));
+                return Attempt<Models.OEmbedResponse>.Fail(new Exception($"Invalid response - content type '{mediaType??"unkown"}' not supported"));
             }
 
             var result = JsonConvert.DeserializeObject<Models.OEmbedResponse>(json, new JsonSerializerSettings
@@ -202,31 +199,5 @@ namespace Novicell.Umbraco.OEmbed.Media
 
             return o.ToString(Formatting.None);
         }
-
-        private static bool IsXml(MediaTypeHeaderValue contentType)
-        {
-            var mediaType = contentType?.MediaType;
-
-            if (string.IsNullOrWhiteSpace(mediaType))
-            {
-                return false;
-            }
-
-            return (mediaType.StartsWith("application") ||
-                    mediaType.StartsWith("text")) &&
-                   mediaType.EndsWith("xml");
-        }
-
-        private static bool IsJson(MediaTypeHeaderValue contentType)
-        {
-            var mediaType = contentType?.MediaType;
-
-            if (string.IsNullOrWhiteSpace(mediaType))
-            {
-                return false;
-            }
-            
-            return mediaType.StartsWith("application") && mediaType.EndsWith("json");
-        }
-    }
+	}
 }

@@ -16,24 +16,12 @@ namespace Novicell.Umbraco.OEmbed.Services
 {
     internal class OEmbedDiscoveryService : OEmbedServiceBase, IOEmbedDiscoveryService
     {
-        private static class OEmbedMediaTypeNames
-		{
-            private const string suffix = "+oembed";
-
-            public const string TextXml = MediaTypeNames.Text.Xml + suffix;
-            public const string ApplicationJson = MediaTypeNames.Application.Json + suffix;
-        }
-
-
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ILogger<OEmbedDiscoveryService> _logger;
 
         public OEmbedDiscoveryService(
-            IHttpClientFactory httpClientFactory,
-            ILogger<OEmbedDiscoveryService> logger)
+            IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
-            _logger = logger;
         }
 
         /// <summary>
@@ -78,11 +66,11 @@ namespace Novicell.Umbraco.OEmbed.Services
                     return Attempt.Fail<IEmbedProvider>(null);
                 }
 
-                return Attempt<IEmbedProvider>.Fail(new Exception($"Error downloading html from '{url}'", e));
+                return Attempt.Fail<IEmbedProvider>(null, new Exception($"Error downloading html from '{url}'", e));
             }
             catch (Exception e)
             {
-                return Attempt<IEmbedProvider>.Fail(e);
+                return Attempt.Fail<IEmbedProvider>(null, e);
             }
 
             if (endpoint != null)
@@ -101,13 +89,12 @@ namespace Novicell.Umbraco.OEmbed.Services
                 .Where(e => e.NodeType == HtmlAgilityPack.HtmlNodeType.Element && e.Name == "link")
                 .Select(x => new
                 {
-                    rel = HttpUtility.HtmlDecode(x.GetAttributeValue("rel", string.Empty))?.ToLowerInvariant(),
-                    type = HttpUtility.HtmlDecode(x.GetAttributeValue("type", string.Empty))?.ToLowerInvariant(),
+                    rel = HttpUtility.HtmlDecode(x.GetAttributeValue("rel", string.Empty)),
                     href = HttpUtility.HtmlDecode(x.GetAttributeValue("href", string.Empty)),
+                    type = HttpUtility.HtmlDecode(x.GetAttributeValue("type", string.Empty)),
                 })
-                .Where(x => IsAlternateOrAlternative(x.rel) && 
-                            IsApplicationJsonOrTextXmlWithOEmbedSuffix(x.type) &&
-                            !string.IsNullOrWhiteSpace(x.href))
+                .Where(x => IsAlternateOrAlternative(x.rel?.ToLowerInvariant()) && 
+                            IsJsonOrXmlWithOEmbedSuffix(x.type?.ToLowerInvariant()))
                 .Select(x => x.href)
                 .ToList();
 
@@ -127,27 +114,7 @@ namespace Novicell.Umbraco.OEmbed.Services
             return null;
         }
 
-        private static bool IsApplicationJsonOrTextXmlWithOEmbedSuffix(string type)
-        {
-            if (string.IsNullOrWhiteSpace(type))
-            {
-                return false;
-            }
-
-            return type.ToLower() switch
-            {
-                OEmbedMediaTypeNames.ApplicationJson => true,
-                OEmbedMediaTypeNames.TextXml => true,
-                _ => false,
-            };
-        }
-
-        private static bool IsAlternateOrAlternative(string rel)
-        {
-            return rel == "alternate" || rel == "alternative";
-        }
-
-        internal sealed class AutodiscoverEmbedProvider : IEmbedProvider
+		internal sealed class AutodiscoverEmbedProvider : IEmbedProvider
         {
             public AutodiscoverEmbedProvider(Uri endpoint)
             {
