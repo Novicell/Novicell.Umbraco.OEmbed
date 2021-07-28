@@ -78,11 +78,11 @@ namespace Novicell.Umbraco.OEmbed.Services
                     return Attempt.Fail<IEmbedProvider>(null);
                 }
 
-                return Attempt<IEmbedProvider>.Fail(new Exception($"Error downloading html from '{url}'", e));
+                return Attempt.Fail<IEmbedProvider>(null, new Exception($"Error downloading html from '{url}'", e));
             }
             catch (Exception e)
             {
-                return Attempt<IEmbedProvider>.Fail(e);
+                return Attempt.Fail<IEmbedProvider>(null, e);
             }
 
             if (endpoint != null)
@@ -101,13 +101,12 @@ namespace Novicell.Umbraco.OEmbed.Services
                 .Where(e => e.NodeType == HtmlAgilityPack.HtmlNodeType.Element && e.Name == "link")
                 .Select(x => new
                 {
-                    rel = HttpUtility.HtmlDecode(x.GetAttributeValue("rel", string.Empty))?.ToLowerInvariant(),
-                    type = HttpUtility.HtmlDecode(x.GetAttributeValue("type", string.Empty))?.ToLowerInvariant(),
+                    rel = HttpUtility.HtmlDecode(x.GetAttributeValue("rel", string.Empty)),
                     href = HttpUtility.HtmlDecode(x.GetAttributeValue("href", string.Empty)),
+                    type = HttpUtility.HtmlDecode(x.GetAttributeValue("type", string.Empty)),
                 })
-                .Where(x => IsAlternateOrAlternative(x.rel) && 
-                            IsApplicationJsonOrTextXmlWithOEmbedSuffix(x.type) &&
-                            !string.IsNullOrWhiteSpace(x.href))
+                .Where(x => IsAlternateOrAlternative(x.rel?.ToLowerInvariant()) && 
+                            IsApplicationJsonOrTextXmlWithOEmbedSuffix(x.type?.ToLowerInvariant()))
                 .Select(x => x.href)
                 .ToList();
 
