@@ -217,7 +217,6 @@
             $scope.model.value.oembed = r.data;
           },
           function (r) {
-              console.log('fetchOEmbed-error', r);
             formHelper.handleError(r);
             $scope.model.value.oembed = null;
           },
