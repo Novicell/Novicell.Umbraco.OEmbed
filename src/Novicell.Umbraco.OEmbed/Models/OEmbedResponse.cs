@@ -34,10 +34,10 @@ namespace Novicell.Umbraco.OEmbed.Models
         public string ThumbnailUrl { get; set; }
         
         [DataMember(Name = "thumbnail_height")]
-        public double? ThumbnailHeight { get; set; }
+        public int? ThumbnailHeight { get; set; }
         
         [DataMember(Name = "thumbnail_width")]
-        public double? ThumbnailWidth { get; set; }
+        public int? ThumbnailWidth { get; set; }
         
         [DataMember(Name = "html")]
         public string Html { get; set; }
@@ -46,16 +46,31 @@ namespace Novicell.Umbraco.OEmbed.Models
         public string Url { get; set; }
         
         [DataMember(Name = "height")]
-        public double? Height { get; set; }
+        public int? Height { get; set; }
         
         [DataMember(Name = "width")]
-        public double? Width { get; set; }
+        public int? Width { get; set; }
+
+        [DataMember(Name = "cache_age")]
+        public int? CacheAge { get; set; }
 
         [JsonExtensionData]
         // ReSharper disable once CollectionNeverUpdated.Local
         private readonly IDictionary<string, JToken> _additionalData = new Dictionary<string, JToken>();
 
-        public bool TryGetValue(string key, [MaybeNullWhen(false)] out JToken value) =>
-            _additionalData.TryGetValue(key, out value);
+        public bool TryGetValue<T>(string key, [MaybeNullWhen(false)] out T value)
+        {
+            value = default;
+
+            if (_additionalData.TryGetValue(key, out var token))
+            {
+                value = token.ToObject<T>();
+
+                return true;
+            }
+
+            return false;
+        }
+
     }
 }

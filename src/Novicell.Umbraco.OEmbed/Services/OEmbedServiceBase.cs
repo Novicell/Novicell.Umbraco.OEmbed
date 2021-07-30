@@ -6,31 +6,39 @@ namespace Novicell.Umbraco.OEmbed.Services
 {
     internal abstract class OEmbedServiceBase
 	{
-        private static string[] XmlMediaTypes => new[] {
-                MediaTypeNames.Text.Xml,
-                MediaTypeNames.Application.Xml
-            };
+        private static string[] XmlMediaTypes
+            => new[] { MediaTypeNames.Text.Xml, MediaTypeNames.Application.Xml };
 
-        private static string[] JsonMediaTypes => new[] {
-                MediaTypeNames.Application.Json
-            };
+        private static string[] JsonMediaTypes
+            => new[] { MediaTypeNames.Application.Json };
 
+        internal static bool IsJson(string mediaType)
+            => IsAnyOf(mediaType, JsonMediaTypes);
 
-        protected static bool IsJson(string mediaType) => IsAnyOf(mediaType, JsonMediaTypes);
+        internal static bool IsXml(string mediaType)
+            => IsAnyOf(mediaType, XmlMediaTypes);
 
-        protected static bool IsXml(string mediaType) => IsAnyOf(mediaType, XmlMediaTypes);
+        internal static bool IsAlternateOrAlternative(string rel)
+            => IsAnyOf(rel, "alternate", "alternative");
 
-        private static bool IsAnyOf(string mediaType, params string[] mediaTypes)
+        internal static bool IsAnyOf(string input, params string[] options)
         {
-            if (string.IsNullOrWhiteSpace(mediaType))
+            if (string.IsNullOrWhiteSpace(input))
             {
                 return false;
             }
 
-            return mediaTypes.Any(x => x.Equals(mediaType, StringComparison.InvariantCultureIgnoreCase));
+            return options.Any(x => x.Equals(input, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        protected static bool IsJsonOrXmlWithOEmbedSuffix(string mediaType, string suffix = "+oembed")
+        internal static bool IsAnyOfWithSuffix(string input, string suffix, params string[] options)
+        {
+            return IsAnyOf(input, options.Select(x => x + suffix).ToArray());
+        }
+
+
+
+        internal static bool IsJsonOrXmlWithOEmbedSuffix(string mediaType, string suffix = "+oembed")
         {
             if (string.IsNullOrWhiteSpace(mediaType))
             {
@@ -47,8 +55,5 @@ namespace Novicell.Umbraco.OEmbed.Services
 
             return IsJson(mediaType) || IsXml(mediaType);
         }
-
-		protected static bool IsAlternateOrAlternative(string rel) => IsAnyOf(rel, "alternate", "alternative");
-
 	}
 }

@@ -48,16 +48,16 @@
 @if (Model.PageVideo?.OEmbed is OEmbedResponse video)
 {
     var ratio = video.Width.HasValue && video.Height.HasValue ?
-        video.Height.Value / video.Width.Value :
-        0;
+        (double)video.Height.Value / (double)video.Width.Value :
+        0d;
 
     <div class="embed" data-ratio="@ratio">
         <div class="embed__item embed__item--@(video.Type?.ToLower())" style="padding-bottom: @Math.Round(ratio * 100, 2).ToString(CultureInfo.InvariantCulture)%;">
             @Html.Raw(video.Html)
         </div>
         
-        @if (video.TryGetValue("upload_date", out var uploadDateValue) &&
-             DateTime.TryParse(uploadDateValue.ToObject<string>(), out var uploadDate))
+        @if (video.TryGetValue<string>("upload_date", out var uploadDateValue) &&
+             DateTime.TryParse(uploadDateValue, out var uploadDate))
         {
             <p>Upload from @video.ProviderName: @uploadDate</p>
         }

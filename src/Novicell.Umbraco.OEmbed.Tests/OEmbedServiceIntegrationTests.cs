@@ -15,18 +15,18 @@ namespace Novicell.Umbraco.OEmbed.Tests
 {
     [Trait("Category", "Services")]
     [Trait("Category", "Integration")]
-    public class OEmbedServiceTests
+    public class OEmbedServiceIntegrationTests
     {
-        private readonly EmbedProvidersCollection YoutubeOnlyEmbedProvidersCollection;
+        private readonly EmbedProvidersCollection YouTubeOnlyEmbedProvidersCollection;
         private readonly EmbedProvidersCollection SoundCloudOnlyEmbedProvidersCollection;
         private readonly EmbedProvidersCollection EmptyEmbedProvidersCollection;
         private readonly IHttpClientFactory _httpClientFactory = new HttpClientFactory();
 
-        public OEmbedServiceTests()
+        public OEmbedServiceIntegrationTests()
         {
             var jsonSerializer = new JsonNetSerializer();
 
-            YoutubeOnlyEmbedProvidersCollection = new EmbedProvidersCollection(new[]
+            YouTubeOnlyEmbedProvidersCollection = new EmbedProvidersCollection(new[]
             {
                 new YouTube(jsonSerializer),
             });
@@ -52,11 +52,11 @@ namespace Novicell.Umbraco.OEmbed.Tests
         [Fact]
         public async Task EmbedYouTubeVideoFromKnownProvider()
         {
-            var oembed = new OEmbedService(YoutubeOnlyEmbedProvidersCollection, _httpClientFactory, null,null);
-            var embed = await oembed.GetOEmbedAsync(new Uri("https://www.youtube.com/watch?v=0BPL5tT9_2Y"), 0, 0);
+            var oembed = new OEmbedService(YouTubeOnlyEmbedProvidersCollection, _httpClientFactory, null,null);
+            var embed = await oembed.GetOEmbedAsync(new Uri("https://www.youtube.com/watch?v=dQw4w9WgXcQ"), 0, 0);
             Assert.True(embed.Success);
             Assert.NotNull(embed.Result);
-            Assert.StartsWith("The Joe", embed.Result.Title);
+            Assert.StartsWith("Rick Astley", embed.Result.Title);
         }
 
         [Fact]
@@ -69,14 +69,14 @@ namespace Novicell.Umbraco.OEmbed.Tests
 
             var discovery = new OEmbedDiscoveryService(_httpClientFactory);
             var oembed = new OEmbedService(EmptyEmbedProvidersCollection, _httpClientFactory, discovery, settings);
-            var embed = await oembed.GetOEmbedAsync(new Uri("https://www.youtube.com/watch?v=0BPL5tT9_2Y"), 0, 0);
+            var embed = await oembed.GetOEmbedAsync(new Uri("https://www.youtube.com/watch?v=dQw4w9WgXcQ"), 0, 0);
             Assert.True(embed.Success);
             Assert.NotNull(embed.Result);
-            Assert.StartsWith("The Joe", embed.Result.Title);
+            Assert.StartsWith("Rick Astley", embed.Result.Title);
         }
 
         [Fact]
-        public async Task EmbedVidemoVideoFromAutodiscover()
+        public async Task EmbedVimeoVideoFromAutodiscover()
         {
             var settings = new OptionsWrapper<OEmbedSettings>(new OEmbedSettings
             {
@@ -90,8 +90,8 @@ namespace Novicell.Umbraco.OEmbed.Tests
             Assert.NotNull(embed.Result);
             Assert.StartsWith("Welcome to Umbraco HQ", embed.Result.Title);
 
-            if (embed.Result.TryGetValue("upload_date", out var uploadDateToken) && 
-                DateTime.TryParse(uploadDateToken.Value<string>(), out var uploadDate))
+            if (embed.Result.TryGetValue<string>("upload_date", out var uploadDateValue) && 
+                DateTime.TryParse(uploadDateValue, out var uploadDate))
             {
                 /*Assert.NotNull(uploadDate);*/
                 Assert.NotEqual(default, uploadDate);
@@ -112,7 +112,6 @@ namespace Novicell.Umbraco.OEmbed.Tests
             Assert.False(embed.Success);
             Assert.IsType<OEmbedUrlNotSupportedException>(embed.Exception);
         }
-
 
         [Fact]
         public async Task FailWhenNoProvidersGiven()
