@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -13,11 +14,11 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Novicell.Umbraco.OEmbed.Configuration.Models;
-using Novicell.Umbraco.OEmbed.Services;
+using Novicell.Umbraco.OEmbed.Media;
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Media.EmbedProviders;
 
-namespace Novicell.Umbraco.OEmbed.Media
+namespace Novicell.Umbraco.OEmbed.Services
 {
     internal class OEmbedService : OEmbedServiceBase, IOEmbedService
     {
@@ -47,20 +48,11 @@ namespace Novicell.Umbraco.OEmbed.Media
                 return Attempt.Fail<Models.OEmbedResponse>(null, new OEmbedUrlNotSupportedException());
             }
 
-            var oembed = await FetchOEmbedFromUrlAsync(_url);
+            var client = _httpClientFactory.CreateClient();
 
-            if (oembed.Success)
-            {
-                return Attempt.Succeed(oembed.Result);
-            }
+            var result = await FetchOEmbedFromUrlAsync(_url, client);
 
-            if (oembed.Exception != null)
-            {
-                return Attempt.Fail<Models.OEmbedResponse>(
-                    null, new OEmbedException($"Error fetching OEmbed from '{_url}'.", oembed.Exception));
-            }
-
-            return Attempt.Fail<Models.OEmbedResponse>();
+            return result;
         }
 
         private async Task<Uri> GetOEmbedUrlAsync(Uri url, int maxwidth, int maxheight)
@@ -88,49 +80,52 @@ namespace Novicell.Umbraco.OEmbed.Media
                     return null;
 
                 case EmbedProviderBase providerBase:
-                {
-                    var providerUrl = providerBase.GetEmbedProviderUrl(url.ToString(), maxwidth, maxheight);
+                    {
+                        var providerUrl = providerBase.GetEmbedProviderUrl(url.ToString(), maxwidth, maxheight);
 
-                    return string.IsNullOrWhiteSpace(providerUrl) ? null : new Uri(providerUrl);
-                }
+                        return string.IsNullOrWhiteSpace(providerUrl) ? null : new Uri(providerUrl);
+                    }
                 default:
                     return BuildProviderOEmbedUrl(provider.ApiEndpoint, provider.RequestParams, url, maxwidth, maxheight);
             }
         }
 
-        private async Task<Attempt<Models.OEmbedResponse>> FetchOEmbedFromUrlAsync(Uri url)
+        internal static async Task<Attempt<Models.OEmbedResponse>> FetchOEmbedFromUrlAsync(Uri url, HttpClient client)
         {
-            var client = _httpClientFactory.CreateClient();
-
             var response = await client.GetAsync(url);
 
-            if(response.StatusCode == HttpStatusCode.NotFound)
-            {
-                return Attempt.Fail<Models.OEmbedResponse>(null);
-            }
-
-            try 
+            try
             {
                 response.EnsureSuccessStatusCode();
             }
             catch (HttpRequestException e)
             {
-                return Attempt<Models.OEmbedResponse>.Fail(e);
+                return Attempt.Fail<Models.OEmbedResponse>(null, e);
             }
-
-            var content = await response.Content.ReadAsStringAsync();
 
             var mediaType = response.Content.Headers.ContentType?.MediaType;
 
-            var json = IsJson(mediaType) ? content :
-                IsXml(mediaType) ? ConvertXmlToJson(content) : null;
+            var json = IsJson(mediaType) ? await response.Content.ReadAsStringAsync() : null;
 
-            if (json == null)
+            if (json == null && IsXml(mediaType))
             {
-                return Attempt<Models.OEmbedResponse>.Fail(new Exception($"Invalid response - content type '{mediaType??"unkown"}' not supported"));
+                var xml = await response.Content.ReadAsStringAsync();
+                json = ConvertXmlToJson(xml);
             }
 
-            var result = JsonConvert.DeserializeObject<Models.OEmbedResponse>(json, new JsonSerializerSettings
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                return Attempt<Models.OEmbedResponse>.Fail(new Exception($"Invalid response - content type '{mediaType ?? "unkown"}' not supported"));
+            }
+
+            var result = DeserializeResponse<Models.OEmbedResponse>(json);
+
+            return Attempt.Succeed(result);
+        }
+
+        internal static T DeserializeResponse<T>(string json)
+        {
+            var result = JsonConvert.DeserializeObject<T>(json, new JsonSerializerSettings
             {
                 //MissingMemberHandling = MissingMemberHandling.Ignore,
                 Error = (sender, args) =>
@@ -139,10 +134,10 @@ namespace Novicell.Umbraco.OEmbed.Media
                 },
             });
 
-            return Attempt.Succeed(result);
+            return result;
         }
 
-        private static Uri BuildProviderOEmbedUrl(string endpoint, IDictionary<string,string> parameters, Uri url, int maxwidth, int maxheight)
+        internal static Uri BuildProviderOEmbedUrl(string endpoint, IDictionary<string, string> parameters, Uri url, int maxwidth, int maxheight)
         {
             if (string.IsNullOrWhiteSpace(endpoint))
             {
@@ -178,9 +173,9 @@ namespace Novicell.Umbraco.OEmbed.Media
             return builder.Uri;
         }
 
-        private static string ConvertXmlToJson(string xml)
+        internal static string ConvertXmlToJson(string text)
         {
-            var x = XDocument.Parse(xml);
+            var x = XDocument.Parse(text);
 
             if (x.Root == null)
             {
@@ -191,13 +186,13 @@ namespace Novicell.Umbraco.OEmbed.Media
             foreach (var e in x.Root.Elements())
             {
                 var propertyName = new string(e.Name.LocalName
-                            .Select(c => char.IsLetterOrDigit(c) ? c : '_')
+                            .Select(c => char.IsLetterOrDigit(c) ? c : '_' /* hi there ^_^ */)
                             .ToArray());
 
-                o[propertyName] = (e.Value);
+                o[propertyName] = e.Value;
             }
 
             return o.ToString(Formatting.None);
         }
-	}
+    }
 }

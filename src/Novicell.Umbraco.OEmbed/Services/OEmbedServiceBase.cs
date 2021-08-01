@@ -6,17 +6,19 @@ namespace Novicell.Umbraco.OEmbed.Services
 {
     internal abstract class OEmbedServiceBase
 	{
+        internal static string OEmbedMediaTypeSuffix = "+oembed";
+
         private static string[] XmlMediaTypes
-            => new[] { MediaTypeNames.Text.Xml, MediaTypeNames.Application.Xml };
+            = new[] { MediaTypeNames.Text.Xml, MediaTypeNames.Application.Xml };
 
         private static string[] JsonMediaTypes
-            => new[] { MediaTypeNames.Application.Json };
+            = new[] { MediaTypeNames.Application.Json };
 
-        internal static bool IsJson(string mediaType)
-            => IsAnyOf(mediaType, JsonMediaTypes);
+        internal static bool IsJson(string mediaType, string suffix = null)
+            => IsAnyOfWithSuffix(mediaType, suffix ?? string.Empty, JsonMediaTypes);
 
-        internal static bool IsXml(string mediaType)
-            => IsAnyOf(mediaType, XmlMediaTypes);
+        internal static bool IsXml(string mediaType, string suffix = null)
+            => IsAnyOfWithSuffix(mediaType, suffix??string.Empty, XmlMediaTypes);
 
         internal static bool IsAlternateOrAlternative(string rel)
             => IsAnyOf(rel, "alternate", "alternative");
@@ -34,26 +36,6 @@ namespace Novicell.Umbraco.OEmbed.Services
         internal static bool IsAnyOfWithSuffix(string input, string suffix, params string[] options)
         {
             return IsAnyOf(input, options.Select(x => x + suffix).ToArray());
-        }
-
-
-
-        internal static bool IsJsonOrXmlWithOEmbedSuffix(string mediaType, string suffix = "+oembed")
-        {
-            if (string.IsNullOrWhiteSpace(mediaType))
-            {
-                return false;
-            }
-
-            var indexOfSuffix = mediaType.LastIndexOf(suffix);
-            if(indexOfSuffix == -1)
-			{
-                return false;
-			}
-
-            mediaType = mediaType.Substring(0, indexOfSuffix);
-
-            return IsJson(mediaType) || IsXml(mediaType);
         }
 	}
 }
