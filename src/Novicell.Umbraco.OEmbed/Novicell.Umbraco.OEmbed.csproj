@@ -8,8 +8,8 @@
     <Description>OEmbed propertyeditor for Umbraco.</Description>
     <Product>Novicell.Umbraco.OEmbed</Product>
     <PackageTags>novicell umbraco oembed plugin propertyeditor editor video embed link photo image</PackageTags>
-    <Version>1.0.0-dev</Version>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Version></Version>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <RepositoryUrl>https://github.com/Novicell/Novicell.Umbraco.OEmbed</RepositoryUrl>
     <PackageProjectUrl>https://github.com/Novicell/Novicell.Umbraco.OEmbed</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

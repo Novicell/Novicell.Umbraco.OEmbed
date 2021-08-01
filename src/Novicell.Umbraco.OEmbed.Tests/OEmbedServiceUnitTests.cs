@@ -12,6 +12,8 @@ namespace Novicell.Umbraco.OEmbed.Tests
         [Fact]
         public async Task EmbedFromVimeoJson()
         {
+            // example from https://vimeo.com/api/oembed.json?url=https%3A%2F%2Fvimeo.com%2F251769074
+
             const string json = "{\"type\":\"video\",\"version\":\"1.0\",\"provider_name\":\"Vimeo\",\"provider_url\":\"https:\\/\\/vimeo.com\\/\",\"title\":\"Welcome to Umbraco HQ\",\"author_name\":\"Umbraco\",\"author_url\":\"https:\\/\\/vimeo.com\\/umbraco\",\"is_plus\":\"0\",\"account_type\":\"pro\",\"html\":\"<iframe src=\\\"https:\\/\\/player.vimeo.com\\/video\\/251769074?app_id=122963\\\" width=\\\"640\\\" height=\\\"360\\\" frameborder=\\\"0\\\" allow=\\\"autoplay; fullscreen; picture-in-picture\\\" allowfullscreen title=\\\"Welcome to Umbraco HQ\\\"><\\/iframe>\",\"width\":640,\"height\":360,\"duration\":210,\"description\":\"Niels Hartvig, the Umbraco founder with the prestigious title; Cheif Unicorn, will show you around Umbraco HQ.\",\"thumbnail_url\":\"https:\\/\\/i.vimeocdn.com\\/video\\/678231625_640\",\"thumbnail_width\":640,\"thumbnail_height\":360,\"thumbnail_url_with_play_button\":\"https:\\/\\/i.vimeocdn.com\\/filter\\/overlay?src0=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F678231625_640&src1=http%3A%2F%2Ff.vimeocdn.com%2Fp%2Fimages%2Fcrawler_play.png\",\"upload_date\":\"2018-01-19 02:45:06\",\"video_id\":251769074,\"uri\":\"\\/videos\\/251769074\"}";
 
             var response = OEmbedService.DeserializeResponse<Models.OEmbedResponse>(json);
@@ -22,6 +24,9 @@ namespace Novicell.Umbraco.OEmbed.Tests
             
             Assert.True(response.TryGetValue("duration", out int duration));
             Assert.Equal(210, duration);
+
+            Assert.True(response.TryGetValue("is_plus", out string isPlus));
+            Assert.Equal("0", isPlus);
 
             Assert.True(response.TryGetValue("upload_date", out DateTime uploadDate));
             Assert.Equal(2018, uploadDate.Year);

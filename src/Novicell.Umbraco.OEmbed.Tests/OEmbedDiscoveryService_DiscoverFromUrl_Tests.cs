@@ -8,12 +8,12 @@ namespace Novicell.Umbraco.OEmbed.Tests
 {
     [Trait("Category", "Services")]
     [Trait("Category", "Integration")]
-    public class OEmbedDiscoveryServiceTests
+    public class OEmbedDiscoveryService_DiscoverFromUrl_Tests
     {
         private readonly IHttpClientFactory _httpClientFactory = new HttpClientFactory();
 
         [Fact]
-        public async Task CanNotDiscoverInvalidUrl()
+        public async void CanNotDiscoverInvalidUrl()
         {
             var url = new Uri("https://0.0.0.0/not-found");
 
