@@ -3,19 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
+using J2N.Text;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using Novicell.Umbraco.OEmbed.Media;
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Media;
+using static Lucene.Net.Queries.Function.ValueSources.MultiFunction;
 
 namespace Novicell.Umbraco.OEmbed.Services
 {
     internal class OEmbedDiscoveryService : OEmbedServiceBase, IOEmbedDiscoveryService
     {
+        private const string TypeAttributeName = "type";
+        private const string RelAttributeName = "rel";
+
         private readonly IHttpClientFactory _httpClientFactory;
 
         public OEmbedDiscoveryService(
@@ -43,8 +50,6 @@ namespace Novicell.Umbraco.OEmbed.Services
         {
             var client = _httpClientFactory.CreateClient();
 
-            var html = new HtmlAgilityPack.HtmlDocument();
-
             Uri endpoint;
 
             try
@@ -55,9 +60,13 @@ namespace Novicell.Umbraco.OEmbed.Services
 
                 var content = await response.Content.ReadAsStringAsync();
 
-                html.LoadHtml(content);
+                endpoint = FindOEmbedEndpointInHtml(content);
 
-                endpoint = FindOEmbedEndpointUrl(html, url);
+                if(endpoint == null && response.Headers.TryGetValues("Link", out var link))
+                {
+                    endpoint = FindOEmbedEndpointInLinkHeader(link);
+                }
+
             }
             catch (HttpRequestException e)
             {
@@ -75,6 +84,11 @@ namespace Novicell.Umbraco.OEmbed.Services
 
             if (endpoint != null)
             {
+                if (!endpoint.IsAbsoluteUri)
+                {
+                    endpoint = new Uri(url, endpoint);
+                }
+
                 var provider = new AutodiscoverEmbedProvider(endpoint);
 
                 return Attempt.Succeed((IEmbedProvider)provider);
@@ -83,38 +97,105 @@ namespace Novicell.Umbraco.OEmbed.Services
             return Attempt.Fail<IEmbedProvider>(null);
         }
 
-        private static Uri FindOEmbedEndpointUrl(HtmlAgilityPack.HtmlDocument html, Uri url)
+        /// <summary>
+        /// Find the endpoint defined in a link-header.
+        /// </summary>
+        /// <param name="linkHeaderValues">The link-header values from the page being disvored.</param>
+        /// <returns>The endpoint found in one of the provided link-header values.</returns>
+        internal static Uri FindOEmbedEndpointInLinkHeader(IEnumerable<string> linkHeaderValues)
         {
-            var alternateLinks = html.DocumentNode.Descendants()
+            var links = new List<(string Href, string MediaType)>();
+
+            foreach (var headerValue in linkHeaderValues)
+            {
+                var inputs = headerValue.Split(new[] { ';' }, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+
+                if (!inputs.Any())
+                {
+                    continue;
+                }
+
+                var url = inputs[0].StartsWith('<') && inputs[0].EndsWith('>') ?
+                    inputs[0].Substring(1, inputs[0].Length - 2) : null;
+
+                if (url == null)
+                {
+                    continue;
+                }
+
+                if (!inputs.Skip(1)
+                    .Where(x => x.StartsWith(RelAttributeName))
+                    .Any(x => IsAlternateOrAlternative(x.Substring(RelAttributeName.Length + 1))))
+                {
+                    continue;
+                }
+
+                var type = inputs.Skip(1)
+                    .Where(x => x.StartsWith(TypeAttributeName))
+                    .Select(x => x.Substring(TypeAttributeName.Length + 1))
+                    .FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
+
+                if (type == null)
+                {
+                    continue;
+                }
+
+                links.Add((url, type));
+            }
+
+            return GetOEmbedEndpointFromLinks(links.ToArray());
+        }
+
+        /// <summary>
+        /// Find the endpoint defined in a link-element found in the html.
+        /// </summary>
+        /// <param name="html">The html content of the page being discovered.</param>
+        /// <returns>The endpoint found in a link-element in the html.</returns>
+        internal static Uri FindOEmbedEndpointInHtml(string html)
+        {
+            var doc = new HtmlAgilityPack.HtmlDocument();
+
+            doc.LoadHtml(html);
+
+            var links = doc.DocumentNode.Descendants()
                 .Where(e => e.NodeType == HtmlAgilityPack.HtmlNodeType.Element && e.Name == "link")
                 .Select(x => new
                 {
-                    rel = HttpUtility.HtmlDecode(x.GetAttributeValue("rel", string.Empty)),
-                    href = HttpUtility.HtmlDecode(x.GetAttributeValue("href", string.Empty)),
-                    type = HttpUtility.HtmlDecode(x.GetAttributeValue("type", string.Empty)),
+                    Href = HttpUtility.HtmlDecode(x.GetAttributeValue("href", string.Empty)),
+                    Rel = HttpUtility.HtmlDecode(x.GetAttributeValue(RelAttributeName, string.Empty)),
+                    Type = HttpUtility.HtmlDecode(x.GetAttributeValue(TypeAttributeName, string.Empty)),
                 })
-                .Where(x => IsAlternateOrAlternative(x.rel?.ToLowerInvariant()) && 
-                            IsJsonOrXmlWithOEmbedSuffix(x.type?.ToLowerInvariant()))
-                .Select(x => x.href)
+                .Where(x => IsAlternateOrAlternative(x.Rel?.ToLowerInvariant()))
+                .Where(x => !string.IsNullOrWhiteSpace(x.Href))
                 .ToList();
 
-            if (alternateLinks.Any())
-            {
-                foreach (var link in alternateLinks)
-                {
-                    if (!Uri.TryCreate(link, UriKind.RelativeOrAbsolute, out var _url))
-                    {
-                        continue;
-                    }
+            return GetOEmbedEndpointFromLinks(links.Select(x => (x.Href, x.Type)).ToArray());
+        }
 
-                    return _url.IsAbsoluteUri ? _url : new Uri(url, _url);
+        internal static Uri GetOEmbedEndpointFromLinks(ICollection<(string Href, string MediaType)> links)
+        {
+            if (!links.Any())
+            {
+                return null;
+            }
+
+            foreach (var p in new Func<string, bool>[] { 
+                   t => IsJson(t, OEmbedMediaTypeSuffix),
+                   t => IsXml(t, OEmbedMediaTypeSuffix), })
+            {
+                foreach(var l in links.Where(x => p(x.MediaType)))
+                {
+                    if (Uri.TryCreate(l.Href, UriKind.RelativeOrAbsolute, out var _url))
+                    {
+                        return _url;
+                    }
                 }
             }
 
             return null;
         }
 
-		internal sealed class AutodiscoverEmbedProvider : IEmbedProvider
+        internal sealed class AutodiscoverEmbedProvider : IEmbedProvider
         {
             public AutodiscoverEmbedProvider(Uri endpoint)
             {
