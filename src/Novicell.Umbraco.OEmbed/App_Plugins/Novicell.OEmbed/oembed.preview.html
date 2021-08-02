@@ -22,10 +22,10 @@
                 <span class="novicell-oembed-preview__title" ng-bind="vm.model.title"></span><br />
                 <span class="novicell-oembed-preview__author" ng-if="vm.model.author_url||vm.model.author_name">
                     <localize key="general_by">by</localize>
-                    <a ng-href="{{vm.model.author_url}}" target="_blank" ng-bind="vm.model.author_name"></a>
+                    <a ng-href="{{vm.model.author_url}}" target="_blank" rel="noopener noreferrer" ng-bind="vm.model.author_name"></a>
                 </span>
                 <span class="novicell-oembed-preview__provider" ng-if="vm.model.provider_url||vm.model.provider_name">
-                    (<a ng-href="{{vm.model.provider_url}}" target="_blank" ng-bind="vm.model.provider_name"></a>)
+                    (<a ng-href="{{vm.model.provider_url}}" target="_blank" rel="noopener noreferrer" ng-bind="vm.model.provider_name"></a>)
                 </span>
             </div>
         </div>
