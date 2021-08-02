@@ -10,6 +10,7 @@
     <PackageTags>novicell umbraco oembed plugin propertyeditor editor video embed link photo image</PackageTags>
     <Version></Version>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <RepositoryUrl>https://github.com/Novicell/Novicell.Umbraco.OEmbed</RepositoryUrl>
     <PackageProjectUrl>https://github.com/Novicell/Novicell.Umbraco.OEmbed</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -22,6 +23,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Umbraco.Cms.Core" Version="9.0.0-rc001" />
     <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="9.0.0-rc001" />
   </ItemGroup>
