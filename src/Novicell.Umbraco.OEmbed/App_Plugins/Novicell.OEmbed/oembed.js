@@ -207,7 +207,7 @@
             var url = $scope.model.value.url;
 
             if (Utilities.isString(url) && url !== "") {
-                novicellOEmbedResource.getOEmbed(url, $scope.model.config.typeNotFound)
+                novicellOEmbedResource.getOEmbed(url, $scope.model.config.type)
                     .then(function (data, status, headers, config) {
                         $scope.model.value.oembed = data;
                     }, function (data, status, headers, config) {
