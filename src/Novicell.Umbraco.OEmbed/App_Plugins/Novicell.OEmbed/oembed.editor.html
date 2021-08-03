@@ -1,4 +1,4 @@
-﻿<div class="novicell-oembed-editor" ng-controller="Novicell.OEmbed.EditorController as vm">
+<div class="novicell-oembed-editor" ng-controller="Novicell.OEmbed.EditorController as vm">
     <form name="oembedForm" novalidate val-form-manager>
         <umb-editor-view>
             <umb-editor-header name="model.title" name-locked="true" hide-alias="true" hide-icon="true"
@@ -23,25 +23,8 @@
                         <umb-control-group label="@general_preview" ng-if="model.value.oembed">
                             <novicell-oembed-preview model="model.value.oembed"></novicell-oembed-preview>
                         </umb-control-group>
-
-                        <div ng-show="vm.supportsDimensions">
-                            <umb-control-group label="@general_width">
-                                <input type="number" pattern="[0-9]*" min="0" ng-model="vm.width"
-                                    ng-change="vm.updateDimensions()" />
-                            </umb-control-group>
-
-                            <umb-control-group label="@general_height">
-                                <input type="number" pattern="[0-9]*" min="0" ng-model="vm.height"
-                                    ng-change="vm.updateDimensions()" />
-                            </umb-control-group>
-
-                            <umb-control-group label="@general_constrain">
-                                <input id="constrain" type="checkbox" ng-model="model.value.embed.constrain" />
-                            </umb-control-group>
-                        </div>
                     </umb-box-content>
                 </umb-box>
-                <!--<pre>{{model | json}}</pre>-->
             </umb-editor-container>
 
             <umb-editor-footer>
