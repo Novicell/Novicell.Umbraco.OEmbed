@@ -6,17 +6,20 @@
                 <novicell-oembed-preview model="model.value.oembed"></novicell-oembed-preview>
             </div>
             <div class="umb-node-preview__actions">
-                <a class="umb-node-preview__action" title="Edit" ng-click="vm.edit()">
+                <button type="button" class="umb-node-preview__action" ng-click="vm.edit()">
                     <localize key="general_edit">Edit</localize>
-                </a>
-                <a class="umb-node-preview__action umb-node-preview__action--red" title="Remove" ng-click="vm.remove()">
+                </button>
+                <button type="button" class="umb-node-preview__action umb-node-preview__action--red" ng-click="vm.remove()">
                     <localize key="general_remove">Remove</localize>
-                </a>
+                </button>
             </div>
         </div>
     </div>
 
-    <a ng-hide="model.value.oembed" class="umb-node-preview-add" href="#" ng-click="vm.add()" prevent-default>
+    <button type="button"
+            class="umb-node-preview-add" 
+            ng-hide="model.value.oembed" 
+            ng-click="vm.add()">
         <localize key="general_add">Add</localize>
-    </a>
+    </button>
 </div>
