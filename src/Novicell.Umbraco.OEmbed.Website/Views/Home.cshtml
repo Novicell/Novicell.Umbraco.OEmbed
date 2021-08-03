@@ -6,21 +6,21 @@
 @using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.Home>
 @{
-	Layout = null;
+    Layout = null;
 }
 
 <style type="text/css">
-    div.page
-    {
+    div.page {
         max-width: 50%;
     }
 
     .media {
-        max-width:100%;
+        max-width: 100%;
     }
-    .media img {
-      width:100%;  
-    }
+
+        .media img {
+            width: 100%;
+        }
 
     .embed {
     }
@@ -31,37 +31,54 @@
         height: 0;
     }
 
-    .embed__item iframe,
-    .embed__item embed,
-    .embed__item object
-    {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-    }
+        .embed__item iframe,
+        .embed__item embed,
+        .embed__item object {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
 </style>
 
 <div class="page">
 
-@if (Model.PageVideo?.OEmbed is OEmbedResponse video)
-{
-    var ratio = video.Width.HasValue && video.Height.HasValue ?
-        (double)video.Height.Value / (double)video.Width.Value :
-        0d;
+    @if (Model.PageVideo?.OEmbed is OEmbedResponse video)
+    {
+        var ratio = video.Width.HasValue && video.Height.HasValue ?
+            (double)video.Height.Value / (double)video.Width.Value :
+            0d;
 
-    <div class="embed" data-ratio="@ratio">
-        <div class="embed__item embed__item--@(video.Type?.ToLower())" style="padding-bottom: @Math.Round(ratio * 100, 2).ToString(CultureInfo.InvariantCulture)%;">
-            @Html.Raw(video.Html)
-        </div>
-        
-        @if (video.TryGetValue<string>("upload_date", out var uploadDateValue) &&
+        <div class="embed" data-ratio="@ratio">
+            <div class="embed__item embed__item--@(video.Type?.ToLower())" style="padding-bottom: @Math.Round(ratio * 100, 2).ToString(CultureInfo.InvariantCulture)%;">
+                @Html.Raw(video.Html)
+            </div>
+
+            @if (video.TryGetValue("upload_date", out string uploadDateValue) &&
              DateTime.TryParse(uploadDateValue, out var uploadDate))
-        {
-            <p>Upload from @video.ProviderName: @uploadDate</p>
-        }
-    </div>
-}
+            {
+                <p>Upload from @video.ProviderName: @uploadDate</p>
+            }
+        </div>
+    }
 
+
+    @if (Model.PageAny?.OEmbed is OEmbedResponse any)
+    {
+        if (!string.IsNullOrWhiteSpace(Model.PageAny?.Url))
+        {
+            <div class="embed">
+                <div class="embed__item embed__item--@(any.Type?.ToLower())">
+                    @Html.Raw(any.Html)
+                </div>
+
+                @if (any.TryGetValue("upload_date", out string uploadDateValue) &&
+           DateTime.TryParse(uploadDateValue, out var uploadDate))
+                {
+                    <p>Upload from @any.ProviderName: @uploadDate</p>
+                }
+            </div>
+        }
+    }
 </div>

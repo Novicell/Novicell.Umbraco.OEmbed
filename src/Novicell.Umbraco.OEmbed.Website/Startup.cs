@@ -38,7 +38,10 @@ namespace Novicell.Umbraco.OEmbed.Website
         public void ConfigureServices(IServiceCollection services)
         {
 #pragma warning disable IDE0022 // Use expression body for methods
-            services.AddUmbraco(_env, _config)
+            services.AddUmbraco(_env, _config).AddNovicellOEmbed(o =>
+            {
+                o.Autodiscover = true;
+            })
                 .AddBackOffice()             
                 .AddWebsite()
                 .AddComposers()
