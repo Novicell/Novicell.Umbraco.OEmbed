@@ -8,10 +8,10 @@ namespace Novicell.Umbraco.OEmbed.Services
 	{
         internal static string OEmbedMediaTypeSuffix = "+oembed";
 
-        private static string[] XmlMediaTypes
+        private static readonly string[] XmlMediaTypes
             = new[] { MediaTypeNames.Text.Xml, MediaTypeNames.Application.Xml };
 
-        private static string[] JsonMediaTypes
+        private static readonly string[] JsonMediaTypes
             = new[] { MediaTypeNames.Application.Json };
 
         internal static bool IsJson(string mediaType, string suffix = null)
