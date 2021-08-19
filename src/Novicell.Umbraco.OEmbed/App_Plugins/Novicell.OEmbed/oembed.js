@@ -1,9 +1,13 @@
-﻿(function () {
+﻿(function (window) {
     "use strict";
+
+    var angular = window.angular;
+    var Utilities = window.Utilities;
+    var _ = window._;
 
     var mapFromUmbracoSettings = function (settingsKey) {
         var getSetting = function (key, umbracoSettings) {
-            return (umbracoSettings || Umbraco.Sys.ServerVariables.umbracoSettings)[
+            return (umbracoSettings || window.Umbraco.Sys.ServerVariables.umbracoSettings)[
                 key
             ];
         };
@@ -15,36 +19,36 @@
     var mapFromAppPluginsPath = mapFromUmbracoSettings("appPluginsPath");
     var mapFromUmbracoPath = mapFromUmbracoSettings("umbracoPath");
 
-    var previewController = function ($sce, $window) {
+    var previewController = function ($sce) {
         var vm = this;
 
         vm.aspectRatio = null;
 
-        var getSrcDoc = function (html, aspectRatio) {
-            if (!html) return null;
+        var createSrcDoc = function (html, aspectRatio) {
+            if (Utilities.isUndefined(html) || !Utilities.isString(html))
+            {
+                return null;
+            }
 
-            var $doc = $window.angular.element("<div>", { html: html });
+            var element = window.document.createElement("div");
 
-            if (aspectRatio > 0) {
-                $doc.css({
-                    width: "100%",
-                    height: "100%",
-                });
+            element.insertAdjacentHTML("afterbegin", html);
+
+            if (aspectRatio > 0)
+            {
+                element.style.width = "100%";
+                element.style.height = "100%";
             }
 
             var srcdoc = [
                 "<html><head>",
+                aspectRatio > 0 ?
+                    "<style>html,body,iframe{width:100%;height:100%;}</style>" :
+                    "",
                 "</head><body>",
-                $doc.html(),
-                "</body></html>",
+                element.outerHTML,
+                "</body></html>"
             ];
-
-            if (aspectRatio > 0)
-                srcdoc.splice(
-                    1,
-                    0,
-                    "<style>html,body,iframe{width:100%;height:100%;}</style>"
-                );
 
             return $sce.trustAsHtml(srcdoc.join(""));
         };
@@ -58,19 +62,19 @@
                         characterData: true,
                         characterDataOldValue: false,
                         childList: true,
-                        subtree: true,
+                        subtree: true
                     },
                     observer = new MutationObserver(callback);
 
                 observer.observe(target, config);
             }
 
-            var contentWindow = frame.contentWindow;
-
             var updateFrameSize = function (width, height) {
                 //frame.width = width;
                 frame.style.height = height + "px";
             };
+
+            var contentWindow = frame.contentWindow;
 
             createMutationObserver(
                 contentWindow.document,
@@ -98,7 +102,7 @@
                         ? null
                         : round(vm.model.height / vm.model.width, 4);
 
-                vm.srcdoc = getSrcDoc(vm.model.html, vm.aspectRatio);
+                vm.srcdoc = createSrcDoc(vm.model.html, vm.aspectRatio);
             } else {
                 vm.srcdoc = null;
                 vm.aspectRatio = null;
@@ -109,14 +113,14 @@
     var previewComponent = {
         transclude: true,
         bindings: {
-            model: "<",
+            model: "<"
         },
         bindToController: true,
         controller: previewController,
         controllerAs: "vm",
         templateUrl: function () {
             return mapFromAppPluginsPath("/Novicell.OEmbed/oembed.preview.html");
-        },
+        }
     };
 
     //<novicell-oembed-preview model=value.oembed></novicell-oembed-preview>
@@ -161,7 +165,7 @@
                 },
                 close: function () {
                     editorService.close();
-                },
+                }
             };
 
             editorService.open(editor);
@@ -208,9 +212,9 @@
 
             if (Utilities.isString(url) && url !== "") {
                 novicellOEmbedResource.getOEmbed(url, $scope.model.config.type)
-                    .then(function (data, status, headers, config) {
+                    .then(function (data/*, status, headers, config*/) {
                         $scope.model.value.oembed = data;
-                    }, function (data, status, headers, config) {
+                    }, function (data/*, status, headers, config*/) {
                         formHelper.handleError(data);
                         $scope.model.value.oembed = null;
                     });
@@ -220,20 +224,26 @@
         };
 
         vm.validateMandatory = function () {
-            return {
-                isValid:
-                    !$scope.model.validation.mandatory ||
-                    isValidMandatory($scope.model.value),
-                errorMsg: "Value cannot be empty",
-                errorKey: "required",
-            };
-        };
 
-        // private
-        var isValidMandatory = function (value) {
-            return Utilities.isObject(value) &&
-                Utilities.isString(value.url) &&
-                Utilities.isObject(value.oembed);
+            var validate = function (model) {
+
+                if (!model.validation.mandatory)
+                {
+                    return true;
+                }
+
+                var value = model.value;
+
+                return Utilities.isObject(value) &&
+                    Utilities.isString(value.url) &&
+                    Utilities.isObject(value.oembed);
+            };
+
+            return {
+                isValid: validate($scope.model),
+                errorMsg: "Value cannot be empty",
+                errorKey: "required"
+            };
         };
 
         vm.$onInit = function () {
@@ -252,9 +262,9 @@
     angular
         .module('umbraco.resources')
         .factory('novicellOEmbedResource',
-            function ($q, $http, umbRequestHelper) {
+            function ($http, umbRequestHelper) {
 
-                var _url = mapFromUmbracoPath("/backoffice/novicell/oembed/");
+                var endpoint = mapFromUmbracoPath("/backoffice/novicell/oembed/");
 
                 // the factory object returned
                 return {
@@ -264,14 +274,14 @@
                         var requestConfig = {
                             cache: true,
                             umbIgnoreErrors: true,
-                            params: { 'url': url, 'type': type },
+                            params: { 'url': url, 'type': type }
                         };
 
                         return umbRequestHelper.resourcePromise(
-                            $http.get(_url + "Get", requestConfig),
+                            $http.get(endpoint + "Get", requestConfig),
                             "Failed to retrieve OEmbed");
                     }
                 };
             }
         );
-})();
+})(window);
