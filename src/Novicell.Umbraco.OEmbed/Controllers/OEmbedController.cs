@@ -3,10 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Novicell.Umbraco.OEmbed.Media;
 using System;
 using System.ComponentModel;
-using System.Linq;
-using Microsoft.AspNetCore.Http;
+using System.Threading;
 using Novicell.Umbraco.OEmbed.PropertyEditors;
-using Umbraco.Cms.Core.Media.EmbedProviders;
 using Umbraco.Cms.Web.BackOffice.Controllers;
 using Umbraco.Cms.Web.Common.Attributes;
 using Umbraco.Cms.Web.Common.Authorization;
@@ -75,7 +73,7 @@ namespace Novicell.Umbraco.OEmbed.Controllers
                 if (!string.IsNullOrWhiteSpace(type) && !type.InvariantEquals(result?.Type))
                 {
                     var tokens = new Dictionary<string, string> { { nameof(type), type } };
-                    var errorMessage = _localizedTextService.Localize("novicellOEmbed", "embed_type_invalid", tokens);
+                    var errorMessage = _localizedTextService.Localize("novicellOEmbed", "embed_type_invalid", Thread.CurrentThread.CurrentUICulture, tokens);
                     ModelState.AddModelError(nameof(url), errorMessage);
                 }
             }

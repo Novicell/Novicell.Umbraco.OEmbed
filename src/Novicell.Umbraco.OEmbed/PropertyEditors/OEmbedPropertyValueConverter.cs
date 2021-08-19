@@ -10,27 +10,19 @@ namespace Novicell.Umbraco.OEmbed.PropertyValueConverters
 {
     public class OEmbedPropertyValueConverter : PropertyValueConverterBase, IPropertyValueConverter 
     {
-        /// <summary>
-        /// Gets a value indicating whether the converter supports a property type.
-        /// </summary>
-        /// <param name="propertyType">The property type.</param>
-        /// <returns>A value indicating whether the converter supports a property type.</returns>
+        /// <inheritdoc/>
         public override bool IsConverter(IPublishedPropertyType propertyType)
-        {
-            return propertyType.EditorAlias == OEmbedPropertyEditor.PropertyEditorAlias;
-        }
+            => propertyType.EditorAlias == OEmbedPropertyEditor.PropertyEditorAlias;
 
-        /// <summary>
-        /// Gets the type of values returned by the converter.
-        /// </summary>
-        /// <param name="propertyType">The property type.</param>
-        /// <returns>The CLR type of values returned by the converter.</returns>
+        /// <inheritdoc/>
         public override Type GetPropertyValueType(IPublishedPropertyType propertyType)
             => typeof(OEmbedValue);
 
+        /// <inheritdoc/>
         public override PropertyCacheLevel GetPropertyCacheLevel(IPublishedPropertyType propertyType) 
             => PropertyCacheLevel.Element;
 
+        /// <inheritdoc/>
         public override object ConvertIntermediateToObject(IPublishedElement owner, IPublishedPropertyType propertyType,
             PropertyCacheLevel referenceCacheLevel, object inter, bool preview)
         {
@@ -42,6 +34,7 @@ namespace Novicell.Umbraco.OEmbed.PropertyValueConverters
             return model;
         }
 
+        /// <inheritdoc/>
         public override object ConvertSourceToIntermediate(IPublishedElement owner, IPublishedPropertyType propertyType, object source,
             bool preview)
         {

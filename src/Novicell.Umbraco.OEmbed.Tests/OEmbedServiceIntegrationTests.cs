@@ -26,17 +26,17 @@ namespace Novicell.Umbraco.OEmbed.Tests
         {
             var jsonSerializer = new JsonNetSerializer();
 
-            YouTubeOnlyEmbedProvidersCollection = new EmbedProvidersCollection(new[]
+            YouTubeOnlyEmbedProvidersCollection = new EmbedProvidersCollection(() => new[]
             {
                 new YouTube(jsonSerializer),
             });
             
-            SoundCloudOnlyEmbedProvidersCollection = new EmbedProvidersCollection(new[]
+            SoundCloudOnlyEmbedProvidersCollection = new EmbedProvidersCollection(() => new[]
             {
                 new Soundcloud(jsonSerializer),
             });
 
-            EmptyEmbedProvidersCollection = new EmbedProvidersCollection(Array.Empty<IEmbedProvider>());
+            EmptyEmbedProvidersCollection = new EmbedProvidersCollection(() => Array.Empty<IEmbedProvider>());
         }
 
         [Fact]

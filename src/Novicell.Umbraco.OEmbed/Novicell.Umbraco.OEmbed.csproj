@@ -23,8 +23,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Umbraco.Cms.Core" Version="9.0.0-rc001" />
-    <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="9.0.0-rc001" />
+    <PackageReference Include="Umbraco.Cms.Core" Version="9.0.0-rc002" />
+    <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="9.0.0-rc002" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,10 +41,6 @@
   <ItemGroup>
     <Content Remove="App_Plugins\Novicell.OEmbed\Lang\da-dk.xml" />
     <Content Remove="App_Plugins\Novicell.OEmbed\Lang\en-us.xml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
 
   <ItemGroup>
