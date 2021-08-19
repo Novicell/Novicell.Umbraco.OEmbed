@@ -38,7 +38,7 @@ namespace Novicell.Umbraco.OEmbed.PropertyValueConverters
         public override object ConvertSourceToIntermediate(IPublishedElement owner, IPublishedPropertyType propertyType, object source,
             bool preview)
         {
-            if (!(source is string json) ||
+            if (source is not string json ||
                 string.IsNullOrWhiteSpace(json) ||
                 !json.DetectIsJson())
             {
