@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Novicell.Umbraco.OEmbed.Services;
 using Xunit;
-using static System.Net.WebRequestMethods;
 
 namespace Novicell.Umbraco.OEmbed.Tests
 {

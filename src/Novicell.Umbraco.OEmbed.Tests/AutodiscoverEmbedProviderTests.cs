@@ -1,5 +1,4 @@
 using System;
-using Novicell.Umbraco.OEmbed.Media;
 using Novicell.Umbraco.OEmbed.Services;
 using Xunit;
 

@@ -1,6 +1,4 @@
-﻿using Umbraco.Cms.Core.Media.EmbedProviders;
-
-namespace Novicell.Umbraco.OEmbed.Models
+﻿namespace Novicell.Umbraco.OEmbed.Models
 {
     public class OEmbedValue
     {

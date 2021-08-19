@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Novicell.Umbraco.OEmbed.Media;
 using System;
 using System.ComponentModel;
 using System.Threading;
@@ -12,6 +11,7 @@ using Umbraco.Cms.Core.Services;
 using Umbraco.Extensions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Novicell.Umbraco.OEmbed.Services;
 
 namespace Novicell.Umbraco.OEmbed.Controllers
 {

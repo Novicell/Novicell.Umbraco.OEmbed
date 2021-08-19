@@ -4,6 +4,6 @@
     {
         internal const string SectionKey = nameof(Novicell) + ":" + nameof(OEmbed);
 
-        public bool Autodiscover { get; set; }
+        public bool Autodiscover { get; init; }
     }
 }

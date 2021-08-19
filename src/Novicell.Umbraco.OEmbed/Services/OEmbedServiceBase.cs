@@ -23,7 +23,7 @@ namespace Novicell.Umbraco.OEmbed.Services
         internal static bool IsAlternateOrAlternative(string rel)
             => IsAnyOf(rel, "alternate", "alternative");
 
-        internal static bool IsAnyOf(string input, params string[] options)
+        private static bool IsAnyOf(string input, params string[] options)
         {
             if (string.IsNullOrWhiteSpace(input))
             {
@@ -33,7 +33,7 @@ namespace Novicell.Umbraco.OEmbed.Services
             return options.Any(x => x.Equals(input, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        internal static bool IsAnyOfWithSuffix(string input, string suffix, params string[] options)
+        private static bool IsAnyOfWithSuffix(string input, string suffix, params string[] options)
         {
             return IsAnyOf(input, options.Select(x => x + suffix).ToArray());
         }

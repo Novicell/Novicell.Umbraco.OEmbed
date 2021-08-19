@@ -1,11 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
-using Umbraco.Cms.Core.IO;
+﻿using Umbraco.Cms.Core.IO;
 using Umbraco.Cms.Core.PropertyEditors;
-using Umbraco.Cms.Core.Serialization;
-using Umbraco.Cms.Core.Services;
-using Umbraco.Cms.Core.Strings;
 using Umbraco.Cms.Core.WebAssets;
-using Umbraco.Cms.Infrastructure.WebAssets;
 
 namespace Novicell.Umbraco.OEmbed.PropertyEditors
 {
@@ -33,7 +28,7 @@ namespace Novicell.Umbraco.OEmbed.PropertyEditors
         public OEmbedPropertyEditor(
             IDataValueEditorFactory dataValueEditorFactory,
             IIOHelper ioHelper)
-            : base(dataValueEditorFactory, EditorType.PropertyValue)
+            : base(dataValueEditorFactory)
         {
             _ioHelper = ioHelper;
         }

@@ -1,14 +1,13 @@
 ﻿using System;
 using Newtonsoft.Json;
 using Novicell.Umbraco.OEmbed.Models;
-using Novicell.Umbraco.OEmbed.PropertyEditors;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.PropertyEditors;
 using Umbraco.Extensions;
 
-namespace Novicell.Umbraco.OEmbed.PropertyValueConverters
+namespace Novicell.Umbraco.OEmbed.PropertyEditors
 {
-    public class OEmbedPropertyValueConverter : PropertyValueConverterBase, IPropertyValueConverter 
+    public class OEmbedPropertyValueConverter : PropertyValueConverterBase
     {
         /// <inheritdoc/>
         public override bool IsConverter(IPublishedPropertyType propertyType)
@@ -19,7 +18,7 @@ namespace Novicell.Umbraco.OEmbed.PropertyValueConverters
             => typeof(OEmbedValue);
 
         /// <inheritdoc/>
-        public override PropertyCacheLevel GetPropertyCacheLevel(IPublishedPropertyType propertyType) 
+        public override PropertyCacheLevel GetPropertyCacheLevel(IPublishedPropertyType propertyType)
             => PropertyCacheLevel.Element;
 
         /// <inheritdoc/>

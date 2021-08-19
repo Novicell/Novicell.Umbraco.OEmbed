@@ -3,18 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Net.Mime;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
-using J2N.Text;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
-using Novicell.Umbraco.OEmbed.Media;
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Media;
-using static Lucene.Net.Queries.Function.ValueSources.MultiFunction;
 
 namespace Novicell.Umbraco.OEmbed.Services
 {
@@ -25,8 +17,7 @@ namespace Novicell.Umbraco.OEmbed.Services
 
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public OEmbedDiscoveryService(
-            IHttpClientFactory httpClientFactory)
+        public OEmbedDiscoveryService(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
@@ -116,7 +107,7 @@ namespace Novicell.Umbraco.OEmbed.Services
                 }
 
                 var url = inputs[0].StartsWith('<') && inputs[0].EndsWith('>') ?
-                    inputs[0].Substring(1, inputs[0].Length - 2) : null;
+                    inputs[0][1..^1] : null;
 
                 if (url == null)
                 {
@@ -125,14 +116,14 @@ namespace Novicell.Umbraco.OEmbed.Services
 
                 if (!inputs.Skip(1)
                     .Where(x => x.StartsWith(RelAttributeName))
-                    .Any(x => IsAlternateOrAlternative(x.Substring(RelAttributeName.Length + 1))))
+                    .Any(x => IsAlternateOrAlternative(x[(RelAttributeName.Length + 1)..])))
                 {
                     continue;
                 }
 
                 var type = inputs.Skip(1)
                     .Where(x => x.StartsWith(TypeAttributeName))
-                    .Select(x => x.Substring(TypeAttributeName.Length + 1))
+                    .Select(x => x[(TypeAttributeName.Length + 1)..])
                     .FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
 
                 if (type == null)
@@ -172,7 +163,7 @@ namespace Novicell.Umbraco.OEmbed.Services
             return GetOEmbedEndpointFromLinks(links.Select(x => (x.Href, x.Type)).ToArray());
         }
 
-        internal static Uri GetOEmbedEndpointFromLinks(ICollection<(string Href, string MediaType)> links)
+        private static Uri GetOEmbedEndpointFromLinks(ICollection<(string Href, string MediaType)> links)
         {
             if (!links.Any())
             {
@@ -183,9 +174,9 @@ namespace Novicell.Umbraco.OEmbed.Services
                    t => IsJson(t, OEmbedMediaTypeSuffix),
                    t => IsXml(t, OEmbedMediaTypeSuffix), })
             {
-                foreach(var l in links.Where(x => p(x.MediaType)))
+                foreach(var (href, _) in links.Where(x => p(x.MediaType)))
                 {
-                    if (Uri.TryCreate(l.Href, UriKind.RelativeOrAbsolute, out var _url))
+                    if (Uri.TryCreate(href, UriKind.RelativeOrAbsolute, out var _url))
                     {
                         return _url;
                     }
@@ -206,7 +197,7 @@ namespace Novicell.Umbraco.OEmbed.Services
                 RequestParams = GetRequestParameters(endpoint.Query);
             }
 
-            public static Dictionary<string, string> GetRequestParameters(string query)
+            private static Dictionary<string, string> GetRequestParameters(string query)
             {
                 if (string.IsNullOrWhiteSpace(query))
                 {

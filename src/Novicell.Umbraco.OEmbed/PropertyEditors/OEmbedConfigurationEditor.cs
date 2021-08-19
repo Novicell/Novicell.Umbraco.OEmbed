@@ -11,7 +11,7 @@ namespace Novicell.Umbraco.OEmbed.PropertyEditors
     {
         public OEmbedConfigurationEditor(IIOHelper ioHelper) : base(ioHelper)
         {
-            var type = base.Field(nameof(OEmbedConfiguration.Type));
+            var type = Field(nameof(OEmbedConfiguration.Type));
             ConfigureTypeField(type);
         }
 
