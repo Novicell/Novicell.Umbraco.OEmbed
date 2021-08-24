@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Novicell.Umbraco.OEmbed.Configuration.Models;
-using Novicell.Umbraco.OEmbed.Media;
 using Novicell.Umbraco.OEmbed.PropertyEditors;
 using Novicell.Umbraco.OEmbed.Services;
 using Umbraco.Cms.Core.DependencyInjection;

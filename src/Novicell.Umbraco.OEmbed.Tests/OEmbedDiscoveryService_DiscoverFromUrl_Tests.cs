@@ -55,7 +55,8 @@ namespace Novicell.Umbraco.OEmbed.Tests
 
             Assert.Equal("https://vimeo.com/api/oembed.json", provider.Result.ApiEndpoint);
 
-            Assert.Equal(url.AbsoluteUri, provider.Result.RequestParams["url"]);
+            // use StartsWith, as Vimeo appends some data to the url in the url-param
+            Assert.StartsWith(url.AbsoluteUri, provider.Result.RequestParams["url"]);
         }
 
         [Fact]

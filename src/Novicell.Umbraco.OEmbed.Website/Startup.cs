@@ -37,17 +37,11 @@ namespace Novicell.Umbraco.OEmbed.Website
         /// </remarks>
         public void ConfigureServices(IServiceCollection services)
         {
-#pragma warning disable IDE0022 // Use expression body for methods
-            services.AddUmbraco(_env, _config).AddNovicellOEmbed(o =>
-            {
-                o.Autodiscover = true;
-            })
+            services.AddUmbraco(_env, _config)
                 .AddBackOffice()             
                 .AddWebsite()
                 .AddComposers()
                 .Build();
-#pragma warning restore IDE0022 // Use expression body for methods
-
         }
 
         /// <summary>
@@ -63,8 +57,8 @@ namespace Novicell.Umbraco.OEmbed.Website
             app.UseUmbraco()
                 .WithMiddleware(u =>
                 {
-                    u.WithBackOffice();
-                    u.WithWebsite();
+                    u.UseBackOffice();
+                    u.UseWebsite();
                 })
                 .WithEndpoints(u =>
                 {

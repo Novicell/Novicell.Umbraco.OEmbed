@@ -1,20 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using System.Xml.Linq;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Novicell.Umbraco.OEmbed.Configuration.Models;
-using Novicell.Umbraco.OEmbed.Media;
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Media.EmbedProviders;
 
@@ -57,8 +52,8 @@ namespace Novicell.Umbraco.OEmbed.Services
 
         private async Task<Uri> GetOEmbedUrlAsync(Uri url, int maxwidth, int maxheight)
         {
-            var isUrlMatch = new Func<string, string[], bool>((url, patterns)
-                => patterns.Any(p => Regex.IsMatch(url, p, RegexOptions.IgnoreCase)));
+            var isUrlMatch = new Func<string, string[], bool>((input, patterns)
+                => patterns.Any(p => Regex.IsMatch(input, p, RegexOptions.IgnoreCase)));
 
             var provider = _providers?
                 .Where(x => x.UrlSchemeRegex != null)
@@ -90,7 +85,7 @@ namespace Novicell.Umbraco.OEmbed.Services
             }
         }
 
-        internal static async Task<Attempt<Models.OEmbedResponse>> FetchOEmbedFromUrlAsync(Uri url, HttpClient client)
+        private static async Task<Attempt<Models.OEmbedResponse>> FetchOEmbedFromUrlAsync(Uri url, HttpClient client)
         {
             var response = await client.GetAsync(url);
 
@@ -128,7 +123,7 @@ namespace Novicell.Umbraco.OEmbed.Services
             var result = JsonConvert.DeserializeObject<T>(json, new JsonSerializerSettings
             {
                 //MissingMemberHandling = MissingMemberHandling.Ignore,
-                Error = (sender, args) =>
+                Error = (_, args) =>
                 {
                     args.ErrorContext.Handled = true;
                 },
@@ -137,7 +132,7 @@ namespace Novicell.Umbraco.OEmbed.Services
             return result;
         }
 
-        internal static Uri BuildProviderOEmbedUrl(string endpoint, IDictionary<string, string> parameters, Uri url, int maxwidth, int maxheight)
+        private static Uri BuildProviderOEmbedUrl(string endpoint, IDictionary<string, string> parameters, Uri url, int maxwidth, int maxheight)
         {
             if (string.IsNullOrWhiteSpace(endpoint))
             {

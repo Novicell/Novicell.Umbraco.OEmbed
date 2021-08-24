@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Novicell.Umbraco.OEmbed.Models;
 using Umbraco.Cms.Core;
 
-namespace Novicell.Umbraco.OEmbed.Media
+namespace Novicell.Umbraco.OEmbed.Services
 {
     public interface IOEmbedService
     {

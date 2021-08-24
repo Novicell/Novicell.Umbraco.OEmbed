@@ -5,17 +5,16 @@ namespace Novicell.Umbraco.OEmbed
 {
     public class OEmbedException : Exception
     {
-        public OEmbedException()
+        protected OEmbedException()
         {
-            
         }
 
-        public OEmbedException(string message)
+        protected OEmbedException(string message)
             : base(message)
         {
         }
 
-        public OEmbedException(string message, Exception innerException)
+        protected OEmbedException(string message, Exception innerException)
             : base(message, innerException)
         {
         }
