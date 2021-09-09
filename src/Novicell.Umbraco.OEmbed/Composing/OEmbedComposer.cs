@@ -6,7 +6,7 @@ using Umbraco.Extensions;
 
 namespace Novicell.Umbraco.OEmbed.Composing
 {
-    public class OEmbedComposer : IUserComposer
+    public class OEmbedComposer : IComposer
     {
         public void Compose(IUmbracoBuilder builder)
         {
