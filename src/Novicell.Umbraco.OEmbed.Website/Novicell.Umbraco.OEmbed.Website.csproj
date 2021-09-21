@@ -1,6 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <DefaultItemExcludes>$(DefaultItemExcludes);App_Plugins/**;</DefaultItemExcludes>
+    <DefaultItemExcludes>$(DefaultItemExcludes);umbraco/**;</DefaultItemExcludes>
+    <DefaultItemExcludes>$(DefaultItemExcludes);wwwroot/media/**;</DefaultItemExcludes>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,41 +14,26 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="umbraco\Data\**" />
-    <Content Remove="umbraco\logs\**" />
-    <Content Remove="umbraco\MediaCache\**" />
+    <Content Include="App_Plugins/**" CopyToOutputDirectory="Always" />
+    <Content Include="umbraco/**" CopyToOutputDirectory="Always" />
+    <Content Remove="umbraco/Data/**" />
+    <Content Remove="umbraco/Logs/**" />
+    <Content Remove="umbraco/mediacache/**" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="umbraco\Data\**" />
-    <Compile Remove="umbraco\logs\**" />
-    <Compile Remove="umbraco\MediaCache\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Remove="umbraco\Data\**" />
-    <EmbeddedResource Remove="umbraco\logs\**" />
-    <EmbeddedResource Remove="umbraco\MediaCache\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="config\**\*.*">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-    </None>
-    <None Include="umbraco\**\*.*">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-    </None>
-    <None Include="App_Plugins\**\*.*">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-    </None>
-    <None Remove="umbraco\Data\**" />
-    <None Remove="umbraco\logs\**" />
-    <None Remove="umbraco\MediaCache\**" />
-  </ItemGroup>
+
+  <!-- Set this to true if ModelsBuilder mode is not InMemoryAuto-->
+  <PropertyGroup>
+    <RazorCompileOnBuild>false</RazorCompileOnBuild>
+    <RazorCompileOnPublish>false</RazorCompileOnPublish>
+  </PropertyGroup>
 
   <Import Project="..\Novicell.Umbraco.OEmbed\build\Novicell.Umbraco.OEmbed.targets" />
   <ItemGroup>
     <ProjectReference Include="..\Novicell.Umbraco.OEmbed\Novicell.Umbraco.OEmbed.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="uSync\v9\MediaTypes\" />
+    <Folder Include="uSync\v9\MemberTypes\" />
   </ItemGroup>
 
   <!--Set this to true ModelsBuilder mode is not PureLive -->
