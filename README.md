@@ -8,4 +8,4 @@ A property editor for Umbraco 9 that allows you to use OEmbed data for embedding
 
 Find the package on nuget - https://www.nuget.org/packages/Novicell.Umbraco.OEmbed/
 
-> dotnet add package Novicell.Umbraco.OEmbed --version 1.0.0-rc004
+> dotnet add package Novicell.Umbraco.OEmbed
