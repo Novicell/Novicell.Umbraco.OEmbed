@@ -4,8 +4,6 @@
 
 [![Pack and Release](https://github.com/Novicell/Novicell.Umbraco.OEmbed/actions/workflows/cd-pack-and-release.yml/badge.svg)](https://github.com/Novicell/Novicell.Umbraco.OEmbed/actions/workflows/cd-pack-and-release.yml)
 
-A property editor for Umbraco 9 that allows you to use OEmbed data for embedding video or images from external sources.
+A property editor for Umbraco 9 that allows you to use OEmbed data for embedding video, images and anything else that supports OEmbed - from external sources.
 
-Find the package on nuget - https://www.nuget.org/packages/Novicell.Umbraco.OEmbed/
-
-> dotnet add package Novicell.Umbraco.OEmbed --version 1.0.0-rc002
+[Take a look at the documentation here](/.github/Get-Started.md) for info and tips on installation as well as implementation.
