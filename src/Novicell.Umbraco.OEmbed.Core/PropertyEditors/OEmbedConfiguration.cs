@@ -1,6 +1,6 @@
 ﻿using Umbraco.Cms.Core.PropertyEditors;
 
-namespace Novicell.Umbraco.OEmbed.PropertyEditors
+namespace Novicell.Umbraco.OEmbed.Core.PropertyEditors
 {
     public class OEmbedConfiguration
     {

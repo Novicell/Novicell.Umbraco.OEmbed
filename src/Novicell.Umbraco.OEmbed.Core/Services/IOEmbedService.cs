@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Novicell.Umbraco.OEmbed.Models;
+using Novicell.Umbraco.OEmbed.Core.Models;
 using Umbraco.Cms.Core;
 
-namespace Novicell.Umbraco.OEmbed.Services
+namespace Novicell.Umbraco.OEmbed.Core.Services
 {
     public interface IOEmbedService
     {

@@ -1,11 +1,11 @@
 ﻿using System;
 using Newtonsoft.Json;
-using Novicell.Umbraco.OEmbed.Models;
+using Novicell.Umbraco.OEmbed.Core.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.PropertyEditors;
 using Umbraco.Extensions;
 
-namespace Novicell.Umbraco.OEmbed.PropertyEditors
+namespace Novicell.Umbraco.OEmbed.Core.PropertyEditors
 {
     public class OEmbedPropertyValueConverter : PropertyValueConverterBase
     {

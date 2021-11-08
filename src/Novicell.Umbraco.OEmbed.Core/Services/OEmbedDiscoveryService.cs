@@ -8,7 +8,7 @@ using System.Web;
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Media;
 
-namespace Novicell.Umbraco.OEmbed.Services
+namespace Novicell.Umbraco.OEmbed.Core.Services
 {
     internal class OEmbedDiscoveryService : OEmbedServiceBase, IOEmbedDiscoveryService
     {

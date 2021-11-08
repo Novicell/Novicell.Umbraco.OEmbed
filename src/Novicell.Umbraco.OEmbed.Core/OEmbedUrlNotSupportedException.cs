@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Novicell.Umbraco.OEmbed
+namespace Novicell.Umbraco.OEmbed.Core
 {
     public class OEmbedUrlNotSupportedException : OEmbedException
     {

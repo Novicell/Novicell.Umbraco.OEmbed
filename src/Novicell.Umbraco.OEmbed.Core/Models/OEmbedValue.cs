@@ -1,4 +1,4 @@
-﻿namespace Novicell.Umbraco.OEmbed.Models
+﻿namespace Novicell.Umbraco.OEmbed.Core.Models
 {
     public class OEmbedValue
     {
