@@ -1,5 +1,5 @@
-﻿using System;
-using Novicell.Umbraco.OEmbed.Services;
+﻿using Novicell.Umbraco.OEmbed.Core.Services;
+using System;
 using Xunit;
 
 namespace Novicell.Umbraco.OEmbed.Tests

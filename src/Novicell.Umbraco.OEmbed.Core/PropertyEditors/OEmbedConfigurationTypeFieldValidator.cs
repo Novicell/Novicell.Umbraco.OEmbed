@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Novicell.Umbraco.OEmbed.Models;
+using Novicell.Umbraco.OEmbed.Core.Models;
 using Umbraco.Cms.Core.PropertyEditors;
 
-namespace Novicell.Umbraco.OEmbed.PropertyEditors
+namespace Novicell.Umbraco.OEmbed.Core.PropertyEditors
 {
     internal class OEmbedConfigurationTypeFieldValidator : IManifestValueValidator
     {

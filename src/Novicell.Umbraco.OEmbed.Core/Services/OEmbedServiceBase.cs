@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Net.Mime;
 
-namespace Novicell.Umbraco.OEmbed.Services
+namespace Novicell.Umbraco.OEmbed.Core.Services
 {
     internal abstract class OEmbedServiceBase
 	{

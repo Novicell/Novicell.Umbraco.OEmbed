@@ -2,7 +2,7 @@
 using Umbraco.Cms.Core.PropertyEditors;
 using Umbraco.Cms.Core.WebAssets;
 
-namespace Novicell.Umbraco.OEmbed.PropertyEditors
+namespace Novicell.Umbraco.OEmbed.Core.PropertyEditors
 {
     /// <inheritdoc />
     [DataEditor(PropertyEditorAlias, "Novicell OEmbed",

@@ -1,4 +1,4 @@
-﻿namespace Novicell.Umbraco.OEmbed.Configuration.Models
+﻿namespace Novicell.Umbraco.OEmbed.Core.Configuration.Models
 {
     public class OEmbedSettings
     {

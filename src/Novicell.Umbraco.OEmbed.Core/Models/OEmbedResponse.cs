@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Novicell.Umbraco.OEmbed.Models
+namespace Novicell.Umbraco.OEmbed.Core.Models
 {
     [DataContract]
     public class OEmbedResponse

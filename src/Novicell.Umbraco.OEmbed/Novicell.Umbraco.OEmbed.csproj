@@ -53,4 +53,8 @@
     <Content Include="..\..\assets\images\icon.png" Link="icon.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Novicell.Umbraco.OEmbed.Core\Novicell.Umbraco.OEmbed.Core.csproj" />
+  </ItemGroup>
+
 </Project>

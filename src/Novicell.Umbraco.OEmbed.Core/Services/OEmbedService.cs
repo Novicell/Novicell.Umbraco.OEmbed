@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
@@ -9,11 +10,12 @@ using System.Xml.Linq;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Novicell.Umbraco.OEmbed.Configuration.Models;
+using Novicell.Umbraco.OEmbed.Core.Configuration.Models;
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Media.EmbedProviders;
 
-namespace Novicell.Umbraco.OEmbed.Services
+[assembly: InternalsVisibleTo("Novicell.Umbraco.OEmbed.Tests")]
+namespace Novicell.Umbraco.OEmbed.Core.Services
 {
     internal class OEmbedService : OEmbedServiceBase, IOEmbedService
     {

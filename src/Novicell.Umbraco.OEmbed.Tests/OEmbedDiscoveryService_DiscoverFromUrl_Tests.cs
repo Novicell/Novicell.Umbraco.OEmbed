@@ -1,7 +1,7 @@
+using Novicell.Umbraco.OEmbed.Core.Services;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Novicell.Umbraco.OEmbed.Services;
 using Xunit;
 
 namespace Novicell.Umbraco.OEmbed.Tests
@@ -28,7 +28,7 @@ namespace Novicell.Umbraco.OEmbed.Tests
         [Fact]
         public async Task CanDiscoverFlickrEndpoint()
         {
-            var url = new Uri("https://www.flickr.com/photos/percipientstudios/18009929763");
+            var url = new Uri("https://www.flickr.com/photos/percipientstudios/51505498075");
 
             var discovery = new OEmbedDiscoveryService(_httpClientFactory);
 

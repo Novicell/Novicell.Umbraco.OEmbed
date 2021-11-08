@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.ComponentModel;
 using System.Threading;
-using Novicell.Umbraco.OEmbed.PropertyEditors;
+using Novicell.Umbraco.OEmbed.Core.PropertyEditors;
 using Umbraco.Cms.Web.BackOffice.Controllers;
 using Umbraco.Cms.Web.Common.Attributes;
 using Umbraco.Cms.Web.Common.Authorization;
@@ -11,9 +11,9 @@ using Umbraco.Cms.Core.Services;
 using Umbraco.Extensions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Novicell.Umbraco.OEmbed.Services;
+using Novicell.Umbraco.OEmbed.Core.Services;
 
-namespace Novicell.Umbraco.OEmbed.Controllers
+namespace Novicell.Umbraco.OEmbed.Core.Controllers
 {
     /// <summary>
     /// A controller used for the embed dialog

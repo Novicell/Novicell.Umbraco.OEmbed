@@ -1,11 +1,11 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
-using Novicell.Umbraco.OEmbed.Configuration.Models;
-using Novicell.Umbraco.OEmbed.PropertyEditors;
-using Novicell.Umbraco.OEmbed.Services;
+using Novicell.Umbraco.OEmbed.Core.Configuration.Models;
+using Novicell.Umbraco.OEmbed.Core.PropertyEditors;
+using Novicell.Umbraco.OEmbed.Core.Services;
 using Umbraco.Cms.Core.DependencyInjection;
 
-namespace Novicell.Umbraco.OEmbed
+namespace Novicell.Umbraco.OEmbed.Core
 {
     public static class UmbracoBuilderExtensions
     {
@@ -29,7 +29,7 @@ namespace Novicell.Umbraco.OEmbed
 
             builder.Services.AddScoped<IOEmbedService, OEmbedService>();
 
-            builder.Services.AddScoped<IOEmbedDiscoveryService, OEmbedDiscoveryService>();
+            builder.Services.AddScoped<IOEmbedDiscoveryService, IOEmbedDiscoveryService>();
 
             return builder;
         }
