@@ -1,8 +1,0 @@
-﻿@using Umbraco.Cms.Web.Common.PublishedModels;
-@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.Site>
-@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
-@{
-	Layout = null;
-	var home = Model.Descendant<Home>();
-	this.Context.Response.Redirect(home.Url());
-}
