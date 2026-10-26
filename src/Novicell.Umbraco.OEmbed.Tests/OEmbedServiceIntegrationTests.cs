@@ -6,6 +6,7 @@ using Novicell.Umbraco.OEmbed.Configuration.Models;
 using Novicell.Umbraco.OEmbed.Services;
 using Umbraco.Cms.Core.Media;
 using Umbraco.Cms.Core.Media.EmbedProviders;
+using Umbraco.Cms.Core.Serialization;
 using Umbraco.Cms.Infrastructure.Serialization;
 using Xunit;
 
@@ -19,10 +20,11 @@ namespace Novicell.Umbraco.OEmbed.Tests
         private readonly EmbedProvidersCollection SoundCloudOnlyEmbedProvidersCollection;
         private readonly EmbedProvidersCollection EmptyEmbedProvidersCollection;
         private readonly IHttpClientFactory _httpClientFactory = new HttpClientFactory();
+        private readonly IJsonSerializerEncoderFactory _jsonSerializerEncoderFactory = new DefaultJsonSerializerEncoderFactory();
 
         public OEmbedServiceIntegrationTests()
         {
-            var jsonSerializer = new JsonNetSerializer();
+            var jsonSerializer = new SystemTextJsonSerializer(_jsonSerializerEncoderFactory);
 
             YouTubeOnlyEmbedProvidersCollection = new EmbedProvidersCollection(() => new[]
             {

@@ -1,20 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <DefaultItemExcludes>$(DefaultItemExcludes);App_Plugins/**;</DefaultItemExcludes>
     <DefaultItemExcludes>$(DefaultItemExcludes);umbraco/**;</DefaultItemExcludes>
     <DefaultItemExcludes>$(DefaultItemExcludes);wwwroot/media/**;</DefaultItemExcludes>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Umbraco.Cms" Version="9.0.0" />
-    <PackageReference Include="Umbraco.Cms.SqlCe" Version="9.0.0" />
-    <PackageReference Include="Umbraco.SqlServerCE" Version="4.0.0.1" />
-    <PackageReference Include="uSync" Version="9.0.0-rc004" />
+    <PackageReference Include="Microsoft.OpenApi" Version="2.9.0" />
+    <PackageReference Include="Umbraco.Cms" Version="17.7.0" />
+    <PackageReference Include="uSync" Version="17.4.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="App_Plugins/**" CopyToOutputDirectory="Always" />
     <Content Include="umbraco/**" CopyToOutputDirectory="Always" />
     <Content Remove="umbraco/Data/**" />
     <Content Remove="umbraco/Logs/**" />
@@ -29,7 +27,6 @@
     <RazorCompileOnPublish>false</RazorCompileOnPublish>
   </PropertyGroup>
 
-  <Import Project="..\Novicell.Umbraco.OEmbed\build\Novicell.Umbraco.OEmbed.targets" />
   <ItemGroup>
     <ProjectReference Include="..\Novicell.Umbraco.OEmbed\Novicell.Umbraco.OEmbed.csproj" />
   </ItemGroup>
@@ -44,7 +41,7 @@
     <RazorCompileOnBuild>false</RazorCompileOnBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>

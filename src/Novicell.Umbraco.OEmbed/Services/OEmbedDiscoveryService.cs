@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
+﻿using System.Net;
 using System.Web;
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Media;
@@ -219,7 +214,7 @@ namespace Novicell.Umbraco.OEmbed.Services
                 return null;
             }
 
-            public string GetMarkup(string url, int maxWidth = 0, int maxHeight = 0)
+            public Task<string> GetMarkupAsync(string url, int? maxWidth, int? maxHeight, CancellationToken cancellationToken)
             {
                 throw new NotImplementedException();
             }

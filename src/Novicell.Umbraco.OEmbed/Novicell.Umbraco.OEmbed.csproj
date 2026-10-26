@@ -1,56 +1,53 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <ContentTargetFolders>.</ContentTargetFolders>
-    <Product>Novicell.Umbraco.OEmbed</Product>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <StaticWebAssetBasePath>/</StaticWebAssetBasePath>
+    <RootNamespace>Novicell.Umbraco.OEmbed</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <PackageId>Novicell.Umbraco.OEmbed</PackageId>
-    <Title>Novicell.Umbraco.OEmbed</Title>
-    <Description>OEmbed propertyeditor for Umbraco.</Description>
-    <Product>Novicell.Umbraco.OEmbed</Product>
-    <PackageTags>novicell umbraco oembed plugin propertyeditor editor video embed link photo image</PackageTags>
-    <Version></Version>
-    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
-    <RepositoryUrl>https://github.com/Novicell/Novicell.Umbraco.OEmbed</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/Novicell/Novicell.Umbraco.OEmbed</PackageProjectUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageIcon>icon.png</PackageIcon>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <Product>OEmbed</Product>
+    <Title>OEmbed</Title>
   </PropertyGroup>
 
+
+  <!-- Central package management - no versions -->
   <ItemGroup>
-    <PackageReference Include="Umbraco.Cms.Core" Version="9.0.0" />
-    <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="9.0.0" />
+    <PackageReference Include="Microsoft.OpenApi" />
+    <PackageReference Include="Umbraco.Cms.Api.Common" />
+    <PackageReference Include="Umbraco.Cms.Api.Management" />
+    <PackageReference Include="Umbraco.Cms.Web.Common" />
+    <PackageReference Include="Umbraco.Cms.Web.Website" />
   </ItemGroup>
 
+
   <ItemGroup>
-    <Content Include="App_Plugins\Novicell.OEmbed\**\*.*">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    <!-- Don't include the client folder as part of packaging nuget build -->
+    <Content Remove="Client\**" />
+    <Content Include="..\..\assets\images\icon.png">
+      <Link>icon.png</Link>
     </Content>
-    <None Include="build\**\*.*">
-      <Pack>True</Pack>
-      <PackagePath>build</PackagePath>
-    </None>
+    <Content Include="Client\package.json">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+
+    <!-- However make the Umbraco-package.json included for dotnet pack or nuget package and visible to the solution -->
+    <None Include="Client\public\umbraco-package.json" Pack="false" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="App_Plugins\Novicell.OEmbed\Lang\da-dk.xml" />
-    <Content Remove="App_Plugins\Novicell.OEmbed\Lang\en-us.xml" />
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
       <_Parameter1>$(AssemblyName).Tests</_Parameter1>
     </AssemblyAttribute>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="..\..\assets\images\icon.png" Link="icon.png" />
   </ItemGroup>
 
 </Project>

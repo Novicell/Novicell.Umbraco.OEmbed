@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using Novicell.Umbraco.OEmbed.Models;
+using Umbraco.Cms.Core.Models.Validation;
 using Umbraco.Cms.Core.PropertyEditors;
 
 namespace Novicell.Umbraco.OEmbed.PropertyEditors
 {
-    internal class OEmbedConfigurationTypeFieldValidator : IManifestValueValidator
+    internal class OEmbedConfigurationTypeFieldValidator : IValueValidator
     {
         private readonly string _memberName;
 
@@ -15,7 +14,11 @@ namespace Novicell.Umbraco.OEmbed.PropertyEditors
             _memberName = memberName;
         }
 
-        public IEnumerable<ValidationResult> Validate(object value, string valueType, object dataTypeConfiguration)
+        public IEnumerable<ValidationResult> Validate(
+            object value,
+            string valueType,
+            object dataTypeConfiguration,
+            PropertyValidationContext validationContext)
         {
             if (value?.ToString() is not { } s || string.IsNullOrWhiteSpace(s))
             {
@@ -28,7 +31,5 @@ namespace Novicell.Umbraco.OEmbed.PropertyEditors
                     new[] {_memberName});
             }
         }
-
-        public string ValidationName => "OEmbedType";
     }
 }

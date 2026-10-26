@@ -1,0 +1,14 @@
+{
+  "id": "OEmbed",
+  "name": "OEmbed",
+  "version": "0.0.0",
+  "allowTelemetry": true,
+  "extensions": [
+    {
+      "name": "OEmbed Bundle",
+      "alias": "OEmbed.Bundle",
+      "type": "bundle",
+      "js": "/App_Plugins/OEmbed/o-embed.js"
+    }
+  ]
+}

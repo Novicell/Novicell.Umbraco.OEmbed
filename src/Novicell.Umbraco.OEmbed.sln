@@ -1,14 +1,14 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.6.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Novicell.Umbraco.OEmbed.Website", "Novicell.Umbraco.OEmbed.Website\Novicell.Umbraco.OEmbed.Website.csproj", "{EC79CF03-B2DB-4664-AEBE-C6527A9AE3F2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Novicell.Umbraco.OEmbed", "Novicell.Umbraco.OEmbed\Novicell.Umbraco.OEmbed.csproj", "{68E10957-CF84-4D57-9C67-ADE2039D3503}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{BF432BD5-D2A8-4CAB-A805-589B64CF741C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Novicell.Umbraco.OEmbed.Tests", "Novicell.Umbraco.OEmbed.Tests\Novicell.Umbraco.OEmbed.Tests.csproj", "{079ED247-77E3-4E31-B39B-ED6511E3B91B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Novicell.Umbraco.OEmbed", "Novicell.Umbraco.OEmbed\Novicell.Umbraco.OEmbed.csproj", "{EF00116E-FE6A-499A-811C-0EA91C798E79}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,18 +32,6 @@ Global
 		{EC79CF03-B2DB-4664-AEBE-C6527A9AE3F2}.Release|x64.Build.0 = Release|Any CPU
 		{EC79CF03-B2DB-4664-AEBE-C6527A9AE3F2}.Release|x86.ActiveCfg = Release|Any CPU
 		{EC79CF03-B2DB-4664-AEBE-C6527A9AE3F2}.Release|x86.Build.0 = Release|Any CPU
-		{68E10957-CF84-4D57-9C67-ADE2039D3503}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{68E10957-CF84-4D57-9C67-ADE2039D3503}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{68E10957-CF84-4D57-9C67-ADE2039D3503}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{68E10957-CF84-4D57-9C67-ADE2039D3503}.Debug|x64.Build.0 = Debug|Any CPU
-		{68E10957-CF84-4D57-9C67-ADE2039D3503}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{68E10957-CF84-4D57-9C67-ADE2039D3503}.Debug|x86.Build.0 = Debug|Any CPU
-		{68E10957-CF84-4D57-9C67-ADE2039D3503}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{68E10957-CF84-4D57-9C67-ADE2039D3503}.Release|Any CPU.Build.0 = Release|Any CPU
-		{68E10957-CF84-4D57-9C67-ADE2039D3503}.Release|x64.ActiveCfg = Release|Any CPU
-		{68E10957-CF84-4D57-9C67-ADE2039D3503}.Release|x64.Build.0 = Release|Any CPU
-		{68E10957-CF84-4D57-9C67-ADE2039D3503}.Release|x86.ActiveCfg = Release|Any CPU
-		{68E10957-CF84-4D57-9C67-ADE2039D3503}.Release|x86.Build.0 = Release|Any CPU
 		{079ED247-77E3-4E31-B39B-ED6511E3B91B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{079ED247-77E3-4E31-B39B-ED6511E3B91B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{079ED247-77E3-4E31-B39B-ED6511E3B91B}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -56,6 +44,18 @@ Global
 		{079ED247-77E3-4E31-B39B-ED6511E3B91B}.Release|x64.Build.0 = Release|Any CPU
 		{079ED247-77E3-4E31-B39B-ED6511E3B91B}.Release|x86.ActiveCfg = Release|Any CPU
 		{079ED247-77E3-4E31-B39B-ED6511E3B91B}.Release|x86.Build.0 = Release|Any CPU
+		{EF00116E-FE6A-499A-811C-0EA91C798E79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF00116E-FE6A-499A-811C-0EA91C798E79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF00116E-FE6A-499A-811C-0EA91C798E79}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EF00116E-FE6A-499A-811C-0EA91C798E79}.Debug|x64.Build.0 = Debug|Any CPU
+		{EF00116E-FE6A-499A-811C-0EA91C798E79}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EF00116E-FE6A-499A-811C-0EA91C798E79}.Debug|x86.Build.0 = Debug|Any CPU
+		{EF00116E-FE6A-499A-811C-0EA91C798E79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF00116E-FE6A-499A-811C-0EA91C798E79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF00116E-FE6A-499A-811C-0EA91C798E79}.Release|x64.ActiveCfg = Release|Any CPU
+		{EF00116E-FE6A-499A-811C-0EA91C798E79}.Release|x64.Build.0 = Release|Any CPU
+		{EF00116E-FE6A-499A-811C-0EA91C798E79}.Release|x86.ActiveCfg = Release|Any CPU
+		{EF00116E-FE6A-499A-811C-0EA91C798E79}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

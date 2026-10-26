@@ -13,7 +13,7 @@ namespace Novicell.Umbraco.OEmbed.Tests
         private readonly IHttpClientFactory _httpClientFactory = new HttpClientFactory();
 
         [Fact]
-        public async void CanNotDiscoverInvalidUrl()
+        public async Task CanNotDiscoverInvalidUrl()
         {
             var url = new Uri("https://0.0.0.0/not-found");
 
