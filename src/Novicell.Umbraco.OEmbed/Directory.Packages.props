@@ -6,7 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- Umbraco API packages - Used by extension templates -->
-    <PackageVersion Include="Microsoft.OpenApi" Version="2.12.2" />
+    <PackageVersion Include="Microsoft.OpenApi" Version="2.9.0" />
     <PackageVersion Include="Umbraco.Cms.Api.Common" Version="17.7.0" />
     <PackageVersion Include="Umbraco.Cms.Api.Management" Version="17.7.0" />
     <PackageVersion Include="Umbraco.Cms.Web.Common" Version="17.7.0" />
