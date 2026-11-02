@@ -44,7 +44,7 @@ The table at the end has a column per stage: Build, Start, Pages and Backoffice.
 ./scripts/Test-UmbracoVersions.ps1 -PackageVersion 17.0.0-beta.1
 ```
 
-The copy is made in `artifacts/nuget-site`, with its own `Directory.Build.props` and `Directory.Packages.props` so the repository's don't apply, and restores into its own empty `artifacts/nuget-site-packages`, so a locally packed version with the same number isn't used instead. The Pages stage also checks that the site serves the package's manifest with that version and its `?v=`. The results end up in `artifacts/nuget-package/<package version>/<Umbraco version>/`.
+The copy is made in `artifacts/nuget-site`, with its own `Directory.Build.props` and `Directory.Packages.props` so the repository's don't apply, and uses its own empty package folder, `artifacts/nuget-site-packages` (set as `NUGET_PACKAGES` for the run, as Umbraco's runtime Razor compilation reads it too), so a locally packed version with the same number isn't used instead. The Pages stage also checks that the site serves the package's manifest with that version and its `?v=`. The results end up in `artifacts/nuget-package/<package version>/<Umbraco version>/`.
 
 On GitHub, `.github/workflows/nuget-test.yml` runs it after every release, once the new version is on nuget.org (that takes a few minutes), and can be started by hand from the Actions tab with any published version.
 

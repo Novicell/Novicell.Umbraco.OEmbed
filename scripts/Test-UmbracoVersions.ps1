@@ -17,8 +17,11 @@ $smoke = Join-Path $PSScriptRoot "backoffice-smoke.mjs"
 
 if ($PackageVersion) {
     $site = Join-Path $root "artifacts/nuget-site"
-    # An empty package folder of its own, so a package with the same version from a local pack isn't used instead
+    # An empty package folder of its own, so a package with the same version from a local pack isn't used instead.
+    # Set for the whole run, as the site's runtime Razor compilation looks for packages there too.
     $sitePackages = Join-Path $root "artifacts/nuget-site-packages"
+    $previousNugetPackages = $env:NUGET_PACKAGES
+    $env:NUGET_PACKAGES = $sitePackages
     $out = Join-Path $root "artifacts/nuget-package/$PackageVersion"
     $siteProcessName = "NugetSite"
     # Nothing from the repository is built, so the client isn't either
@@ -75,7 +78,6 @@ function New-NugetSite {
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>Novicell.Umbraco.OEmbed.TestSite</RootNamespace>
-    <RestorePackagesPath>$([System.Security.SecurityElement]::Escape($sitePackages))</RestorePackagesPath>
     <CompressionEnabled>false</CompressionEnabled>
     <CopyRazorGenerateFilesToPublishDirectory>true</CopyRazorGenerateFilesToPublishDirectory>
     <RazorCompileOnBuild>false</RazorCompileOnBuild>
@@ -186,6 +188,8 @@ foreach ($entry in $Versions) {
     Stop-TestSite $process
     $results += [pscustomobject]$result
 }
+
+if ($PackageVersion) { $env:NUGET_PACKAGES = $previousNugetPackages }
 
 $rebuilt = $true
 if (-not $PackageVersion) {
