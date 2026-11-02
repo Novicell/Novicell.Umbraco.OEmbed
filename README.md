@@ -223,8 +223,8 @@ The workflow first runs the smoke test (`.github/workflows/smoke.yml`, see [scri
 
 - **NuGet.org:** under the Novicell account, add a Trusted Publishing policy for repository owner `Novicell`, repository `Novicell.Umbraco.OEmbed`, workflow file `release.yml` and environment `nuget`.
 - **GitHub:**
-  - create the environment `nuget`, with required reviewers
-  - add the repository variable `NUGET_USER`, the NuGet.org user name that owns the policy
+  - create the environment `nuget`, with required reviewers (the release creates it without reviewers otherwise, and publishes without asking)
+  - optionally, the repository variable `NUGET_USER`, the NuGet.org user name that owns the policy, if it isn't `SKG_Novicell`
   - protect `v17/dev` and `v17/main` with the CI check as required
 
 ## Requirements

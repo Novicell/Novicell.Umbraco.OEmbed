@@ -121,7 +121,8 @@ jobs:
         id: nuget
         uses: NuGet/login@v1
         with:
-          user: ${{ vars.NUGET_USER }}
+          # The NuGet.org user that owns the Trusted Publishing policy
+          user: ${{ vars.NUGET_USER || 'SKG_Novicell' }}
 
       - name: Push to NuGet.org
         id: push
