@@ -1,0 +1,88 @@
+name: Test the NuGet package
+
+# The smoke test on a copy of the test site that installs a published version from nuget.org; see scripts/README.md.
+# Runs after every release (release.yml), and can be started by hand.
+on:
+  workflow_call:
+    inputs:
+      version:
+        type: string
+        required: true
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'The package version on nuget.org, like 17.0.0-beta.1'
+        required: true
+      versions:
+        description: 'Umbraco versions, comma separated, each optionally "=<uSync version>"'
+        required: false
+        default: '17.0.0=17.0.0,17.4.2=17.3.2,17.8.0=17.3.2'
+
+permissions:
+  contents: read
+
+env:
+  CLIENT_DIR: src/Novicell.Umbraco.OEmbed/Client
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  test:
+    name: Test the package from nuget.org
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ${{ env.CLIENT_DIR }}/package-lock.json
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      # Playwright, for the browser test
+      - name: Install client packages
+        working-directory: ${{ env.CLIENT_DIR }}
+        run: npm ci
+
+      # A new version takes a few minutes to be validated and indexed after it is pushed. The index lists versions in
+      # lowercase, so the version is lowercased and matched as it is (-F).
+      - name: Wait for the package on nuget.org
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          for i in $(seq 1 60); do
+            if curl -sf https://api.nuget.org/v3-flatcontainer/novicell.umbraco.oembed/index.json | grep -qF "\"${VERSION,,}\""; then
+              echo "$VERSION is on nuget.org"
+              exit 0
+            fi
+            sleep 30
+          done
+          echo "::error::$VERSION wasn't on nuget.org after 30 minutes"
+          exit 1
+
+      # Kestrel needs a certificate for https://localhost; the test does not check it
+      - name: Create a development certificate
+        run: dotnet dev-certs https
+
+      - name: Run the smoke test
+        shell: pwsh
+        env:
+          VERSION: ${{ inputs.version }}
+          VERSIONS: ${{ inputs.versions }}
+        run: |
+          $arguments = @{ PackageVersion = $env:VERSION }
+          if ($env:VERSIONS) { $arguments.Versions = $env:VERSIONS -split ',' | ForEach-Object Trim }
+          ./scripts/Test-UmbracoVersions.ps1 @arguments
+
+      - name: Upload logs and screenshots
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: nuget-package-test
+          path: artifacts/nuget-package
+          if-no-files-found: ignore

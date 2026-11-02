@@ -1,0 +1,20 @@
+{
+  "id": "Novicell.Umbraco.OEmbed",
+  "name": "Novicell.Umbraco.OEmbed",
+  "version": "0.0.0",
+  "allowTelemetry": true,
+  "extensions": [
+    {
+      "name": "Novicell OEmbed",
+      "alias": "Novicell.OEmbed.Bundle",
+      "type": "bundle",
+      "js": "/App_Plugins/NovicellUmbracoOEmbed/novicell-umbraco-oembed-manifests.js?v=20260606"
+    },
+    {
+      "type": "backofficeEntryPoint",
+      "name": "Novicell OEmbed Backoffice Entry Point",
+      "alias": "Novicell.OEmbed.BackofficeEntryPoint",
+      "js": "/App_Plugins/NovicellUmbracoOEmbed/novicell-umbraco-oembed-app.js?v=20260606"
+    }
+  ]
+}

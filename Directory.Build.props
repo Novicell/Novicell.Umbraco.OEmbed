@@ -1,0 +1,27 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+  </PropertyGroup>
+
+  <!--
+    The package declares only Umbraco, so what Umbraco itself brings is Umbraco's to keep up to date, and
+    cannot be fixed from here (a pin would also become a dependency of the package). NuGet audit therefore
+    looks at the packages we reference directly. An advisory for one of those stays visible as a warning but
+    does not fail the build, so a new one does not turn every pull request red; Dependabot keeps them in check.
+  -->
+  <PropertyGroup>
+    <NuGetAuditMode>direct</NuGetAuditMode>
+    <WarningsNotAsErrors>$(WarningsNotAsErrors);NU1901;NU1902;NU1903;NU1904</WarningsNotAsErrors>
+  </PropertyGroup>
+
+  <!-- Reproducible builds when built by GitHub Actions -->
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+</Project>

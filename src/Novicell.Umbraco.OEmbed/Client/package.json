@@ -1,0 +1,27 @@
+{
+  "name": "novicell-umbraco-oembed",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "watch": "tsc && vite build --watch",
+    "build": "tsc && vite build",
+    "test": "web-test-runner \"src/**/*.test.ts\"",
+    "test:watch": "web-test-runner \"src/**/*.test.ts\" --watch",
+    "generate-client": "node scripts/generate-openapi.js https://localhost:44366/umbraco/swagger/novicell-oembed/swagger.json"
+  },
+  "devDependencies": {
+    "@hey-api/openapi-ts": "^0.85.0",
+    "@umbraco-cms/backoffice": "^17.4.2",
+    "@web/dev-server-esbuild": "^1.0.5",
+    "@web/test-runner": "^0.20.2",
+    "@web/test-runner-playwright": "^0.11.1",
+    "chai": "^5.3.3",
+    "chalk": "^5.6.2",
+    "msw": "^2.6.10",
+    "node-fetch": "^3.3.2",
+    "sinon": "^19.0.2",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.9"
+  }
+}

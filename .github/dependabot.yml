@@ -1,0 +1,39 @@
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directories:
+      - /
+      - /tests
+      - /src/Novicell.Umbraco.OEmbed.TestSite
+    target-branch: v17/dev
+    schedule:
+      interval: weekly
+    ignore:
+      # The package builds against the lowest Umbraco 17 version on purpose, so any 17.x site can install it
+      - dependency-name: Umbraco.Cms.Core
+      - dependency-name: Umbraco.Cms.Web.Common
+      - dependency-name: Umbraco.Cms.Api.Common
+      - dependency-name: Umbraco.Cms.Api.Management
+      # A new Umbraco major version gets its own v<major>/dev branch
+      - dependency-name: Umbraco.*
+        update-types: [version-update:semver-major]
+      - dependency-name: uSync
+        update-types: [version-update:semver-major]
+    groups:
+      umbraco:
+        patterns: [Umbraco.*, uSync]
+
+  - package-ecosystem: npm
+    directory: /src/Novicell.Umbraco.OEmbed/Client
+    target-branch: v17/dev
+    schedule:
+      interval: weekly
+    ignore:
+      - dependency-name: '@umbraco-cms/backoffice'
+        update-types: [version-update:semver-major]
+
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: v17/dev
+    schedule:
+      interval: weekly

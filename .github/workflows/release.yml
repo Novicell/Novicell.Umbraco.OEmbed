@@ -1,0 +1,145 @@
+name: Release
+
+# Publishing a GitHub release with a tag like v17.0.0 or v17.0.0-beta.1 publishes that version to NuGet.org.
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+env:
+  CLIENT_DIR: src/Novicell.Umbraco.OEmbed/Client
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  smoke:
+    uses: ./.github/workflows/smoke.yml
+
+  publish:
+    name: Publish to NuGet.org
+    needs: smoke
+    runs-on: ubuntu-latest
+    # Approval, and the environment NuGet.org's Trusted Publishing policy is tied to
+    environment: nuget
+    permissions:
+      contents: write # attach the package to the release
+      id-token: write # Trusted Publishing
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      pushed: ${{ steps.push.outputs.pushed }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # needed to check which branch the tag is on
+
+      - name: Check the version
+        id: version
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+          PRERELEASE: ${{ github.event.release.prerelease }}
+        run: |
+          version="${TAG#v}"
+          if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::The tag must be a version like v17.0.0 or v17.0.0-beta.1, not $TAG"
+            exit 1
+          fi
+
+          # The major version follows the Umbraco version the package supports
+          major="${version%%.*}"
+          umbraco=$(sed -n 's/.*<UmbracoVersion>\([0-9]*\)\..*/\1/p' Directory.Packages.props)
+          if [ "$major" != "$umbraco" ]; then
+            echo "::error::Version $version must start with $umbraco, the Umbraco version in Directory.Packages.props"
+            exit 1
+          fi
+
+          # Releases come from v<major>/main
+          branch="v$major/main"
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" "origin/$branch"; then
+            echo "::error::The tag $TAG must point to a commit on $branch"
+            exit 1
+          fi
+
+          # A beta on NuGet should also be a pre-release on GitHub, and the other way round
+          if [[ "$version" == *-* ]]; then is_prerelease=true; else is_prerelease=false; fi
+          if [ "$is_prerelease" != "$PRERELEASE" ]; then
+            echo "::error::Version $version and the release's pre-release setting ($PRERELEASE) don't match"
+            exit 1
+          fi
+
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ${{ env.CLIENT_DIR }}/package-lock.json
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      # The tag is the version: write it everywhere a version is shown
+      - name: Set the version
+        working-directory: ${{ env.CLIENT_DIR }}
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          npm version "$VERSION" --no-git-tag-version --allow-same-version
+          node "$GITHUB_WORKSPACE/.github/scripts/stamp-manifest.mjs" "$VERSION" public/umbraco-package.json
+
+      - name: Build client
+        working-directory: ${{ env.CLIENT_DIR }}
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+          npm test
+          npm run build
+
+      - name: Build and test
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          dotnet build --configuration Release -p:Version="$VERSION"
+          dotnet test --configuration Release --no-build
+
+      - name: Pack
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: dotnet pack src/Novicell.Umbraco.OEmbed --configuration Release --no-build -p:Version="$VERSION" --output artifacts
+
+      # Kept with the run, also when publishing fails, so the package can be looked at
+      - name: Upload package
+        uses: actions/upload-artifact@v7
+        with:
+          name: nuget-package
+          path: artifacts/*.*nupkg
+          if-no-files-found: error
+
+      - name: Log in to NuGet.org
+        id: nuget
+        uses: NuGet/login@v1
+        with:
+          user: ${{ vars.NUGET_USER }}
+
+      - name: Push to NuGet.org
+        id: push
+        run: |
+          dotnet nuget push artifacts/*.nupkg --api-key "${{ steps.nuget.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
+          echo "pushed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Attach the package to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$TAG" artifacts/*.nupkg --clobber
+
+  # The published package, installed from nuget.org, on the same Umbraco versions as the smoke test. It runs once the
+  # push succeeded, also when attaching the package to the release failed afterwards.
+  test-published:
+    needs: publish
+    if: ${{ !cancelled() && needs.publish.outputs.pushed == 'true' }}
+    uses: ./.github/workflows/nuget-test.yml
+    with:
+      version: ${{ needs.publish.outputs.version }}

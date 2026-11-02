@@ -1,56 +1,123 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <ContentTargetFolders>.</ContentTargetFolders>
-    <Product>Novicell.Umbraco.OEmbed</Product>
-    <PackageId>Novicell.Umbraco.OEmbed</PackageId>
-    <Title>Novicell.Umbraco.OEmbed</Title>
-    <Description>OEmbed propertyeditor for Umbraco.</Description>
-    <Product>Novicell.Umbraco.OEmbed</Product>
-    <PackageTags>novicell umbraco oembed plugin propertyeditor editor video embed link photo image</PackageTags>
-    <Version></Version>
-    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
-    <RepositoryUrl>https://github.com/Novicell/Novicell.Umbraco.OEmbed</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/Novicell/Novicell.Umbraco.OEmbed</PackageProjectUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageIcon>icon.png</PackageIcon>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-  </PropertyGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
-  <ItemGroup>
-    <PackageReference Include="Umbraco.Cms.Core" Version="9.0.0" />
-    <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="9.0.0" />
-  </ItemGroup>
+    <PropertyGroup>
+        <RootNamespace>Novicell.Umbraco.OEmbed</RootNamespace>
+        <StaticWebAssetBasePath>/</StaticWebAssetBasePath>
+        <AddRazorSupportForMvc>false</AddRazorSupportForMvc>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <Content Include="App_Plugins\Novicell.OEmbed\**\*.*">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-    </Content>
-    <None Include="build\**\*.*">
-      <Pack>True</Pack>
-      <PackagePath>build</PackagePath>
-    </None>
-  </ItemGroup>
+    <!-- The package. Version is overwritten from the release tag in CI (-p:Version=). -->
+    <PropertyGroup>
+        <PackageId>Novicell.Umbraco.OEmbed</PackageId>
+        <Product>Novicell.Umbraco.OEmbed</Product>
+        <Title>Novicell OEmbed</Title>
+        <Version>17.0.0-beta.1</Version>
+        <Description>Beta. An oEmbed property editor for Umbraco 17. Editors paste a URL (YouTube, Vimeo, X, Spotify and more) and the embed is resolved and stored with its metadata.</Description>
+        <Authors>Novicell</Authors>
+        <Company>Novicell</Company>
+        <Copyright>Copyright © Novicell $([System.DateTime]::Today.ToString('yyyy'))</Copyright>
+        <PackageTags>umbraco;umbraco-marketplace;oembed;embed;video;property-editor</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageIcon>icon.png</PackageIcon>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageProjectUrl>https://github.com/Novicell/Novicell.Umbraco.OEmbed</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/Novicell/Novicell.Umbraco.OEmbed</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <Content Remove="App_Plugins\Novicell.OEmbed\Lang\da-dk.xml" />
-    <Content Remove="App_Plugins\Novicell.OEmbed\Lang\en-us.xml" />
-  </ItemGroup>
+    <!-- Source link and symbols, so a consumer can step into the package -->
+    <PropertyGroup>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>$(AssemblyName).Tests</_Parameter1>
-    </AssemblyAttribute>
-  </ItemGroup>
+    <!-- Central package management - no versions -->
+    <ItemGroup>
+        <PackageReference Include="Umbraco.Cms.Api.Common" />
+        <PackageReference Include="Umbraco.Cms.Api.Management" />
+        <PackageReference Include="Umbraco.Cms.Core" />
+        <PackageReference Include="Umbraco.Cms.Web.Common" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="..\..\assets\images\icon.png" Link="icon.png" />
-  </ItemGroup>
+    <ItemGroup>
+        <!-- Don't include the client folder as part of packaging nuget build -->
+        <Content Remove="Client\**" />
+
+        <!-- However make the Umbraco-package.json included for dotnet pack or nuget package and visible to the solution -->
+        <None Include="Client\public\umbraco-package.json" Pack="false" />
+
+        <None Include="..\..\README.md" Pack="true" PackagePath="\" Link="README.md" />
+        <None Include="..\..\assets\icon.png" Pack="true" PackagePath="\" Link="icon.png" />
+    </ItemGroup>
+
+    <!-- The package always gets a fresh client: dotnet pack builds it, and a pack without a build checks it. -->
+    <PropertyGroup>
+        <ClientDir>$(MSBuildProjectDirectory)\Client</ClientDir>
+        <ClientOutputDir>wwwroot\App_Plugins\NovicellUmbracoOEmbed</ClientOutputDir>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ClientSource Include="Client\src\**\*;Client\public\**\*;Client\package.json;Client\package-lock.json;Client\vite.config.ts;Client\tsconfig.json" />
+        <!-- A deleted file is no longer in the list above, but deleting, adding or renaming a file updates its folder's time -->
+        <ClientSourceFolder Include="$(ClientDir)\src;$(ClientDir)\public" />
+        <ClientSourceFolder Include="$([System.IO.Directory]::GetDirectories('$(ClientDir)\src', '*', System.IO.SearchOption.AllDirectories))" Condition="Exists('$(ClientDir)\src')" />
+        <ClientSourceFolder Include="$([System.IO.Directory]::GetDirectories('$(ClientDir)\public', '*', System.IO.SearchOption.AllDirectories))" Condition="Exists('$(ClientDir)\public')" />
+    </ItemGroup>
+
+    <!-- npm ci rewrites node_modules/.package-lock.json, so this runs when a package file has changed since -->
+    <Target Name="InstallClientForPack" Inputs="$(ClientDir)\package.json;$(ClientDir)\package-lock.json" Outputs="$(ClientDir)\node_modules\.package-lock.json">
+        <Exec Command="npm ci" WorkingDirectory="$(ClientDir)" />
+    </Target>
+
+    <!-- _IsPacking is set by dotnet pack -->
+    <Target Name="BuildClientForPack" BeforeTargets="BeforeBuild" DependsOnTargets="InstallClientForPack" Condition="'$(_IsPacking)' == 'true'">
+        <Exec Command="npm run build" WorkingDirectory="$(ClientDir)" />
+
+        <!-- Vite names its files by content hash, and wwwroot was read before this target ran. A glob in
+             Remove only matches files that still exist, so the old items are removed by their path. -->
+        <ItemGroup>
+            <_OldClientContent Include="@(Content)" Condition="$([System.String]::Copy('%(Content.Identity)').Replace('/', '\').StartsWith('$(ClientOutputDir)\'))" />
+            <Content Remove="@(_OldClientContent)" />
+            <Content Include="$(ClientOutputDir)\**" ExcludeFromSingleFile="true" CopyToPublishDirectory="PreserveNewest" />
+        </ItemGroup>
+    </Target>
+
+    <!-- Runs only when the output is missing or older than a source, and then refuses to pack -->
+    <Target Name="CheckClientForPack" BeforeTargets="GenerateNuspec" Inputs="@(ClientSource)" Outputs="$(ClientOutputDir)\novicell-umbraco-oembed-manifests.js">
+        <Error Text="The client in $(ClientOutputDir) is missing or older than its sources. Run 'npm ci' and 'npm run build' in Client, or pack without --no-build." />
+    </Target>
+
+    <!-- Inputs and Outputs only compare files, so the folders are compared here. A deleted folder only changes its
+         parent's time, and Client is not watched as npm changes it. src and public must exist anyway: public holds
+         umbraco-package.json, without which the package registers nothing. -->
+    <Target Name="CheckClientFoldersForPack" BeforeTargets="GenerateNuspec" DependsOnTargets="CheckClientForPack">
+        <PropertyGroup>
+            <_ClientOutputTime>$([System.IO.File]::GetLastWriteTime('$(MSBuildProjectDirectory)\$(ClientOutputDir)\novicell-umbraco-oembed-manifests.js').ToFileTimeUtc())</_ClientOutputTime>
+        </PropertyGroup>
+        <ItemGroup>
+            <_ClientRootFolder Include="$(ClientDir)\src;$(ClientDir)\public" />
+            <_MissingClientFolder Include="@(_ClientRootFolder)" Condition="!Exists('%(FullPath)')" />
+            <_ChangedClientFolder Include="@(ClientSourceFolder)" Condition="Exists('%(FullPath)') and $([System.IO.Directory]::GetLastWriteTime('%(FullPath)').ToFileTimeUtc()) &gt; $(_ClientOutputTime)" />
+        </ItemGroup>
+        <Error Condition="'@(_MissingClientFolder)' != ''" Text="@(_MissingClientFolder) is missing. The client is built from Client\src and Client\public, which holds umbraco-package.json, so both must exist." />
+        <Error Condition="'@(_ChangedClientFolder)' != ''" Text="A file or folder in @(_ChangedClientFolder) was added, removed or renamed after the client was built. Run 'npm run build' in Client, or pack without --no-build." />
+    </Target>
+
+    <!-- staticwebassets.build.json is only rewritten when its content changes, so every build leaves its own stamp -->
+    <Target Name="StampBuildForPack" AfterTargets="Build">
+        <Touch Files="$(IntermediateOutputPath)client.build.stamp" AlwaysCreate="true" />
+    </Target>
+
+    <!-- A pack without a build takes the client's file list from the last build -->
+    <Target Name="CheckBuildAfterClient" BeforeTargets="GenerateNuspec" Condition="'$(NoBuild)' == 'true'" Inputs="$(ClientOutputDir)\novicell-umbraco-oembed-manifests.js" Outputs="$(IntermediateOutputPath)client.build.stamp">
+        <Error Text="The client was built after the last 'dotnet build'. Run 'dotnet build' again, or pack without --no-build." />
+    </Target>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Novicell.Umbraco.OEmbed.Tests" />
+        <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+    </ItemGroup>
 
 </Project>

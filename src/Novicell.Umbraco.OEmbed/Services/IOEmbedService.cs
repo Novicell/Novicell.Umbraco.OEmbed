@@ -1,12 +1,12 @@
-﻿using System;
-using System.Threading.Tasks;
 using Novicell.Umbraco.OEmbed.Models;
 using Umbraco.Cms.Core;
+using OEmbedResponse = Novicell.Umbraco.OEmbed.Models.OEmbedResponse;
 
-namespace Novicell.Umbraco.OEmbed.Services
+namespace Novicell.Umbraco.OEmbed.Services;
+
+public interface IOEmbedService
 {
-    public interface IOEmbedService
-    {
-        Task<Attempt<OEmbedResponse>> GetOEmbedAsync(Uri url, int maxwidth, int maxheight);
-    }
+    Task<Attempt<OEmbedResponse?, OEmbedOperationStatus>> GetOEmbedAsync(
+        OEmbedRequest request,
+        CancellationToken cancellationToken);
 }

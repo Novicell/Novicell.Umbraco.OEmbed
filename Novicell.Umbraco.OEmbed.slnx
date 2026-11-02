@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Novicell.Umbraco.OEmbed/Novicell.Umbraco.OEmbed.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Novicell.Umbraco.OEmbed.Tests/Novicell.Umbraco.OEmbed.Tests.csproj" />
+  </Folder>
+  <Project Path="src/Novicell.Umbraco.OEmbed.TestSite/Novicell.Umbraco.OEmbed.TestSite.csproj" />
+</Solution>

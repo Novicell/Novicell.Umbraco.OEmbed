@@ -1,0 +1,63 @@
+name: Smoke test
+
+# The test site on several Umbraco versions, checked in a browser; see scripts/README.md.
+# Runs before every release (release.yml), and can be started by hand.
+on:
+  workflow_call:
+  workflow_dispatch:
+    inputs:
+      versions:
+        description: 'Umbraco versions, comma separated, each optionally "=<uSync version>"'
+        required: false
+        default: '17.0.0=17.0.0,17.4.2=17.3.2,17.8.0=17.3.2'
+
+permissions:
+  contents: read
+
+env:
+  CLIENT_DIR: src/Novicell.Umbraco.OEmbed/Client
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  smoke:
+    name: Smoke test on Umbraco versions
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ${{ env.CLIENT_DIR }}/package-lock.json
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Install client packages
+        working-directory: ${{ env.CLIENT_DIR }}
+        run: npm ci
+
+      # Kestrel needs a certificate for https://localhost; the test does not check it
+      - name: Create a development certificate
+        run: dotnet dev-certs https
+
+      - name: Run the smoke test
+        shell: pwsh
+        env:
+          VERSIONS: ${{ inputs.versions }}
+        run: |
+          $arguments = @{}
+          if ($env:VERSIONS) { $arguments.Versions = $env:VERSIONS -split ',' | ForEach-Object Trim }
+          ./scripts/Test-UmbracoVersions.ps1 @arguments
+
+      - name: Upload logs and screenshots
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: smoke-test
+          path: artifacts/umbraco-versions
+          if-no-files-found: ignore

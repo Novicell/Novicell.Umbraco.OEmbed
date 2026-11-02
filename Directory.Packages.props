@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <!--
+      The lowest Umbraco version the package supports (its major version is the package's major version),
+      so a site on any 17.x can install it. The test site runs a newer Umbraco, see the test site block below.
+    -->
+    <UmbracoVersion>17.0.0</UmbracoVersion>
+    <!--
+      Must match UmbracoAppLocalIcuVersion in Novicell.Umbraco.OEmbed.TestSite.csproj. Defined here too because this file
+      is imported before the project's own PropertyGroup runs, so under CPM the PackageVersion below needs its own
+      fallback to stay in sync with the RuntimeHostConfigurationOption value set from the same property.
+    -->
+    <UmbracoAppLocalIcuVersion Condition="'$(UmbracoAppLocalIcuVersion)' == ''">72.1.0.3</UmbracoAppLocalIcuVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <!--
+      The package: only Umbraco, so it brings nothing else to the site that installs it. The range is any
+      17.x and not 18, as a new Umbraco major version gets its own v<major>/dev branch.
+    -->
+    <PackageVersion Include="Umbraco.Cms.Core" Version="[$(UmbracoVersion), 18)" />
+    <PackageVersion Include="Umbraco.Cms.Web.Common" Version="[$(UmbracoVersion), 18)" />
+    <PackageVersion Include="Umbraco.Cms.Api.Common" Version="[$(UmbracoVersion), 18)" />
+    <PackageVersion Include="Umbraco.Cms.Api.Management" Version="[$(UmbracoVersion), 18)" />
+  </ItemGroup>
+
+  <!--
+    The test site: a newer Umbraco than the package supports, to run it on what a new site gets.
+    scripts/Test-UmbracoVersions.ps1 builds it with other versions (-p:TestSiteUmbracoVersion=...).
+  -->
+  <PropertyGroup>
+    <TestSiteUmbracoVersion Condition="'$(TestSiteUmbracoVersion)' == ''">17.7.1</TestSiteUmbracoVersion>
+    <TestSiteUSyncVersion Condition="'$(TestSiteUSyncVersion)' == ''">17.3.2</TestSiteUSyncVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="Umbraco.Cms" Version="$(TestSiteUmbracoVersion)" />
+    <PackageVersion Include="Umbraco.Cms.DevelopmentMode.Backoffice" Version="$(TestSiteUmbracoVersion)" />
+    <PackageVersion Include="uSync" Version="$(TestSiteUSyncVersion)" />
+    <PackageVersion Include="Microsoft.ICU.ICU4C.Runtime" Version="$(UmbracoAppLocalIcuVersion)" />
+  </ItemGroup>
+</Project>

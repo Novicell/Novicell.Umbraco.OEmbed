@@ -1,193 +1,142 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using System.Collections.Specialized;
+using System.Net;
+using System.Text.Json;
 using System.Web;
-using System.Xml.Linq;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Novicell.Umbraco.OEmbed.Configuration.Models;
+using Microsoft.Extensions.Logging;
+using Novicell.Umbraco.OEmbed.Models;
 using Umbraco.Cms.Core;
-using Umbraco.Cms.Core.Media.EmbedProviders;
 
-namespace Novicell.Umbraco.OEmbed.Services
+namespace Novicell.Umbraco.OEmbed.Services;
+
+internal class OEmbedService(
+    IOEmbedApiEndpointProvider endpointProvider,
+    IHttpClientFactory httpClientFactory,
+    ILogger<OEmbedService> logger)
+    : IOEmbedService
 {
-    internal class OEmbedService : OEmbedServiceBase, IOEmbedService
+    public async Task<Attempt<OEmbedResponse?, OEmbedOperationStatus>> GetOEmbedAsync(
+        OEmbedRequest request,
+        CancellationToken cancellationToken)
     {
-        private readonly EmbedProvidersCollection _providers;
-        private readonly IHttpClientFactory _httpClientFactory;
-        private readonly IOEmbedDiscoveryService _discoveryService;
-        private readonly OEmbedSettings _settings;
-
-        public OEmbedService(
-            EmbedProvidersCollection providers,
-            IHttpClientFactory httpClientFactory,
-            IOEmbedDiscoveryService discoveryService,
-            IOptions<OEmbedSettings> settings)
+        // Only http(s) URLs are looked up, and nothing else is ever requested on an editor's behalf.
+        if (!OEmbedHttp.IsHttpUrl(request.Url))
         {
-            _providers = providers;
-            _httpClientFactory = httpClientFactory;
-            _discoveryService = discoveryService;
-            _settings = settings?.Value;
+            return Attempt<OEmbedResponse?, OEmbedOperationStatus>.Fail(OEmbedOperationStatus.ProviderNotSupported);
         }
 
-        public async Task<Attempt<Models.OEmbedResponse>> GetOEmbedAsync(Uri url, int maxwidth, int maxheight)
+        OEmbedApiEndpoint? apiEndpoint;
+        try
         {
-            var _url = await GetOEmbedUrlAsync(url, maxwidth, maxheight);
-
-            if (_url == null)
-            {
-                return Attempt.Fail<Models.OEmbedResponse>(null, new OEmbedUrlNotSupportedException());
-            }
-
-            var client = _httpClientFactory.CreateClient();
-
-            var result = await FetchOEmbedFromUrlAsync(_url, client);
-
-            return result;
+            apiEndpoint = await endpointProvider.GetApiEndpointAsync(request.Url);
+        }
+        catch (Exception e)
+        {
+            // A provider with a bad ApiEndpoint, or a UrlSchemeRegex that times out. That is the site's
+            // configuration, so it is logged, and the editor is told the URL is not supported.
+            logger.LogError(e, "Finding the oEmbed endpoint for {Url} failed", request.Url);
+            return Attempt<OEmbedResponse?, OEmbedOperationStatus>.Fail(OEmbedOperationStatus.ProviderNotSupported);
         }
 
-        private async Task<Uri> GetOEmbedUrlAsync(Uri url, int maxwidth, int maxheight)
+        if (apiEndpoint == null || !OEmbedHttp.IsHttpUrl(apiEndpoint.Endpoint))
         {
-            var isUrlMatch = new Func<string, string[], bool>((input, patterns)
-                => patterns.Any(p => Regex.IsMatch(input, p, RegexOptions.IgnoreCase)));
-
-            var provider = _providers?
-                .Where(x => x.UrlSchemeRegex != null)
-                .FirstOrDefault(x => isUrlMatch(url.AbsoluteUri, x.UrlSchemeRegex));
-
-            if (provider == null && _settings?.Autodiscover == true)
-            {
-                var discovered = await _discoveryService.DiscoverFromUrlAsync(url);
-
-                if (discovered.Success)
-                {
-                    provider = discovered.Result;
-                }
-            }
-
-            switch (provider)
-            {
-                case null:
-                    return null;
-
-                case EmbedProviderBase providerBase:
-                    {
-                        var providerUrl = providerBase.GetEmbedProviderUrl(url.ToString(), maxwidth, maxheight);
-
-                        return string.IsNullOrWhiteSpace(providerUrl) ? null : new Uri(providerUrl);
-                    }
-                default:
-                    return BuildProviderOEmbedUrl(provider.ApiEndpoint, provider.RequestParams, url, maxwidth, maxheight);
-            }
+            return Attempt<OEmbedResponse?, OEmbedOperationStatus>.Fail(OEmbedOperationStatus.ProviderNotSupported);
         }
 
-        private static async Task<Attempt<Models.OEmbedResponse>> FetchOEmbedFromUrlAsync(Uri url, HttpClient client)
+        using HttpClient client = httpClientFactory.CreateClient(OEmbedHttp.ClientName);
+
+        // One deadline for the request and for reading the body, see OEmbedHttp.CreateDeadline.
+        using CancellationTokenSource deadline = OEmbedHttp.CreateDeadline(cancellationToken);
+
+        try
         {
-            var response = await client.GetAsync(url);
-
-            try
-            {
-                response.EnsureSuccessStatusCode();
-            }
-            catch (HttpRequestException e)
-            {
-                return Attempt.Fail<Models.OEmbedResponse>(null, e);
-            }
-
-            var mediaType = response.Content.Headers.ContentType?.MediaType;
-
-            var json = IsJson(mediaType) ? await response.Content.ReadAsStringAsync() : null;
-
-            if (json == null && IsXml(mediaType))
-            {
-                var xml = await response.Content.ReadAsStringAsync();
-                json = ConvertXmlToJson(xml);
-            }
-
-            if (string.IsNullOrWhiteSpace(json))
-            {
-                return Attempt<Models.OEmbedResponse>.Fail(new Exception($"Invalid response - content type '{mediaType ?? "unkown"}' not supported"));
-            }
-
-            var result = DeserializeResponse<Models.OEmbedResponse>(json);
-
-            return Attempt.Succeed(result);
+            Uri endpointUrl = BuildEndpointUrl(apiEndpoint.Endpoint, request);
+            return await FetchOEmbedAsync(endpointUrl, client, deadline.Token);
         }
-
-        internal static T DeserializeResponse<T>(string json)
+        catch (Exception e)
         {
-            var result = JsonConvert.DeserializeObject<T>(json, new JsonSerializerSettings
-            {
-                //MissingMemberHandling = MissingMemberHandling.Ignore,
-                Error = (_, args) =>
-                {
-                    args.ErrorContext.Handled = true;
-                },
-            });
-
-            return result;
-        }
-
-        private static Uri BuildProviderOEmbedUrl(string endpoint, IDictionary<string, string> parameters, Uri url, int maxwidth, int maxheight)
-        {
-            if (string.IsNullOrWhiteSpace(endpoint))
-            {
-                return null;
-            }
-
-            var builder = new UriBuilder(endpoint);
-
-            var queryString = HttpUtility.ParseQueryString(builder.Query);
-
-            if (parameters != null)
-            {
-                foreach (var (key, value) in parameters)
-                {
-                    queryString[key] = HttpUtility.UrlEncode(value);
-                }
-            }
-
-            queryString[nameof(url)] = url.ToString();
-
-            if (maxwidth > 0)
-            {
-                queryString[nameof(maxwidth)] = maxwidth.ToString();
-            }
-
-            if (maxheight > 0)
-            {
-                queryString[nameof(maxheight)] = maxheight.ToString();
-            }
-
-            builder.Query = queryString.ToString() ?? string.Empty;
-
-            return builder.Uri;
-        }
-
-        internal static string ConvertXmlToJson(string text)
-        {
-            var x = XDocument.Parse(text);
-
-            if (x.Root == null)
-            {
-                return null;
-            }
-
-            var o = new JObject();
-            foreach (var e in x.Root.Elements())
-            {
-                var propertyName = new string(e.Name.LocalName
-                            .Select(c => char.IsLetterOrDigit(c) ? c : '_' /* hi there ^_^ */)
-                            .ToArray());
-
-                o[propertyName] = e.Value;
-            }
-
-            return o.ToString(Formatting.None);
+            logger.LogError(e, "OEmbed request to {Provider} failed", apiEndpoint.Name);
+            return Attempt<OEmbedResponse?, OEmbedOperationStatus>.Fail(OEmbedOperationStatus.InvalidResponse);
         }
     }
+
+    private static Uri BuildEndpointUrl(Uri apiEndpoint, OEmbedRequest request)
+    {
+        var builder = new UriBuilder(apiEndpoint);
+
+        NameValueCollection query = HttpUtility.ParseQueryString(builder.Query);
+        query.Set("url", request.Url.ToString());
+        // Only JSON is read. Some providers answer with XML unless they are asked for JSON (Flickr).
+        query.Set("format", "json");
+        if (request.MaxWidth > 0)
+        {
+            query.Set("maxwidth", request.MaxWidth.ToString());
+        }
+
+        if (request.MaxHeight > 0)
+        {
+            query.Set("maxheight", request.MaxHeight.ToString());
+        }
+
+        builder.Query = query.ToString();
+
+        return builder.Uri;
+    }
+
+    private static async Task<Attempt<OEmbedResponse?, OEmbedOperationStatus>> FetchOEmbedAsync(
+        Uri url,
+        HttpClient client,
+        CancellationToken cancellationToken)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+        // ResponseHeadersRead: the body is not buffered here, it is read with a size limit below.
+        using HttpResponseMessage response = await client.SendAsync(
+            request,
+            HttpCompletionOption.ResponseHeadersRead,
+            cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return response.StatusCode switch
+            {
+                HttpStatusCode.NotFound => Attempt<OEmbedResponse?, OEmbedOperationStatus>.Fail(OEmbedOperationStatus.EmbedNotFound),
+                _ => Attempt<OEmbedResponse?, OEmbedOperationStatus>.Fail(OEmbedOperationStatus.InvalidResponse)
+            };
+        }
+
+        var mediaType = response.Content.Headers.ContentType?.MediaType;
+
+        return OEmbedMediaTypes.IsJson(mediaType)
+            ? await FromJsonResponseAsync(response, cancellationToken)
+            : Attempt<OEmbedResponse?, OEmbedOperationStatus>.Fail(OEmbedOperationStatus.InvalidResponse);
+    }
+
+    private static async Task<Attempt<OEmbedResponse?, OEmbedOperationStatus>> FromJsonResponseAsync(
+        HttpResponseMessage response,
+        CancellationToken cancellationToken)
+    {
+        var json = await OEmbedHttp.ReadLimitedStringAsync(response.Content, cancellationToken);
+
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return Attempt<OEmbedResponse?, OEmbedOperationStatus>.Fail(OEmbedOperationStatus.InvalidResponse);
+        }
+
+        try
+        {
+            // An unexpected value in one field does not fail the response (it is read as null), and what
+            // has no property is kept in OEmbedResponse.Extra. Only a missing or invalid type does.
+            return ToAttempt(JsonSerializer.Deserialize<OEmbedResponse>(json));
+        }
+        catch (JsonException)
+        {
+            return Attempt<OEmbedResponse?, OEmbedOperationStatus>.Fail(OEmbedOperationStatus.InvalidResponse);
+        }
+    }
+
+    private static Attempt<OEmbedResponse?, OEmbedOperationStatus> ToAttempt(OEmbedResponse? result)
+        => Attempt<OEmbedResponse?, OEmbedOperationStatus>.If(
+            result is not null,
+            OEmbedOperationStatus.Success,
+            OEmbedOperationStatus.InvalidResponse,
+            result);
 }

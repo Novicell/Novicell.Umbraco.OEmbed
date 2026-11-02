@@ -1,0 +1,64 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@using Novicell.Umbraco.OEmbed.Models
+@{
+    Layout = null;
+
+    // A data type that allows one embed gives an OEmbedValue (or null), and one that allows several gives a
+    // collection of them, like Umbraco's media picker.
+    var video = Model.Value<OEmbedValue>("video");
+    var embeds = Model.Value<IEnumerable<OEmbedValue>>("embeds") ?? [];
+}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@Model.Value("title")</title>
+    <style>
+            body {
+                margin: 0 auto;
+                padding: 1rem;
+                max-width: 50rem;
+                font-family: system-ui, sans-serif;
+                line-height: 1.5;
+            }
+
+            figure {
+                margin: 2rem 0;
+            }
+
+            figcaption {
+                color: #555;
+                font-size: .875rem;
+            }
+
+            img {
+                max-width: 100%;
+                height: auto;
+            }
+    </style>
+</head>
+
+<body>
+    <h1>@Model.Value("title")</h1>
+    <p>
+        <a href="?raw=1">Allow scripts</a> | <a href="?raw=0">Only iframes</a>
+        | <a href="/headless/@(Context.Request.Query["raw"] == "1" ? "?raw=1" : "")">Headless version</a>
+    </p>
+
+    @if (video is not null)
+    {
+        <h2>Video</h2>
+        <partial name="oembed" model="video" />
+    }
+
+    <h2>Embeds</h2>
+    @foreach (OEmbedValue embed in embeds)
+    {
+        <partial name="oembed" model="embed" />
+    }
+
+</body>
+
+</html>

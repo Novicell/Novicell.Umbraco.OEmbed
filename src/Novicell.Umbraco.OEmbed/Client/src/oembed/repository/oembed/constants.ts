@@ -1,0 +1,1 @@
+export const OEMBED_REPOSITORY_ALIAS = 'Novicell.Repository.OEmbed';
