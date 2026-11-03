@@ -11,7 +11,7 @@
     "generate-client": "node scripts/generate-openapi.js https://localhost:44366/umbraco/swagger/novicell-oembed/swagger.json"
   },
   "devDependencies": {
-    "@hey-api/openapi-ts": "^0.85.0",
+    "@hey-api/openapi-ts": "^0.99.0",
     "@umbraco-cms/backoffice": "^17.4.2",
     "@web/dev-server-esbuild": "^1.0.5",
     "@web/test-runner": "^0.20.2",
