@@ -30,8 +30,8 @@
     scripts/Test-UmbracoVersions.ps1 builds it with other versions (-p:TestSiteUmbracoVersion=...).
   -->
   <PropertyGroup>
-    <TestSiteUmbracoVersion Condition="'$(TestSiteUmbracoVersion)' == ''">17.7.1</TestSiteUmbracoVersion>
-    <TestSiteUSyncVersion Condition="'$(TestSiteUSyncVersion)' == ''">17.3.2</TestSiteUSyncVersion>
+    <TestSiteUmbracoVersion Condition="'$(TestSiteUmbracoVersion)' == ''">17.8.1</TestSiteUmbracoVersion>
+    <TestSiteUSyncVersion Condition="'$(TestSiteUSyncVersion)' == ''">17.6.1</TestSiteUSyncVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Umbraco.Cms" Version="$(TestSiteUmbracoVersion)" />
